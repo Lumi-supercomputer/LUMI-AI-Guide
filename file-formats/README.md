@@ -100,3 +100,4 @@ We see a speed-up of roughly 28% for LMDB compared to squashfs.
 - [Monitoring and Profiling jobs](../monitoring-and-profiling/README.md)
 - [TensorBoard visualization](../TensorBoard-visualization/README.md)
 - [MLflow visualization](../MLflow-visualization/README.md)
+- [Wandb visualization](../Wandb-visualization/README.md)

@@ -355,3 +355,4 @@ On a LUMI-G node, each GPU is connected to a 200Gb/s Network Interface Card (NIC
 - [Monitoring and Profiling jobs](../monitoring-and-profiling/README.md)
 - [TensorBoard visualization](../TensorBoard-visualization/README.md)
 - [MLflow visualization](../MLflow-visualization/README.md)
+- [Wandb visualization](../Wandb-visualization/README.md)

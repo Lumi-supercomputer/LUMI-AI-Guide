@@ -30,7 +30,7 @@ The guide is structured into the following sections:
 - [Monitoring and Profiling jobs](monitoring-and-profiling/README.md)
 - [TensorBoard visualization](TensorBoard-visualization/README.md)
 - [MLflow visualization](MLflow-visualization/README.md)
-
+- [Wandb visualization](Wandb-visualization/README.md)
 
 ### Further reading
 
