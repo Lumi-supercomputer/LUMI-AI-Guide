@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "If you use this material, please cite it using these metadata."
+authors:
+  - name: "LUMI User Support Team"
+  - family-names: "Decristoforo"
+    given-names: "Gregor"
+  - family-names: "Sødequist"
+    given-names: "Joachim"
+  - family-names: "Rigazzi"
+    given-names: "Alessandro"
+  - family-names: "Dreuning"
+    given-names: "Henk"
+  - family-names: "Szpindler "
+    given-names: "Maciej"
+  - family-names: "Dietze"
+    given-names: "Jørn"
+  - family-names: "Sjöberg "
+    given-names: "Mats"  
+  - family-names: "Janicki "
+    given-names: "Maciej"
+  - family-names: "Tiks"
+    given-names: "Mihkel"
+  - family-names: "Vicherek"
+    given-names: "Jan"
+title: "LUMI AI Guide"
+type: "data"
+abstract: "The LUMI AI Guide is designed to assist users in migrating their machine learning applications from smaller-scale computing environments to the LUMI supercomputer. "
+version: 2025-03-05
+date-released: 2025-03-05
+license: CC-BY-4.0 for text content, MIT for code
+repository-code: "https://github.com/Lumi-supercomputer/LUMI-AI-Guide"
