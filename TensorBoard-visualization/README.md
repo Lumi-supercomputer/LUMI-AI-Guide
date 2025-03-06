@@ -75,7 +75,7 @@ TensorBoard can be used on LUMI via the [web interface](https://docs.lumi-superc
 
 To launch it, select the log directory where you have data to visualize, which in this case would be the path to the `runs` directory, and the resources for the Slurm job.
 
-Note that TensorBoard is very memory intensive but has low CPU usage.
+Note that TensorBoard is very memory intensive but has low CPU usage. Thus, in the case of performance problems, adding more memory during allocation can help.
 
  ### Table of contents
 
@@ -88,3 +88,5 @@ Note that TensorBoard is very memory intensive but has low CPU usage.
 - [Monitoring and Profiling jobs](../monitoring-and-profiling/README.md)
 - [TensorBoard visualization](../TensorBoard-visualization/README.md)
 - [MLflow visualization](../MLflow-visualization/README.md)
+- [Wandb visualization](../Wandb-visualization/README.md)
+

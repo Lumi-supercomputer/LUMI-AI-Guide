@@ -72,3 +72,4 @@ Once the session has started you can see graphs for loss and accuracy similar to
 - [Monitoring and Profiling jobs](../monitoring-and-profiling/README.md)
 - [TensorBoard visualization](../TensorBoard-visualization/README.md)
 - [MLflow visualization](../MLflow-visualization/README.md)
+- [Wandb visualization](../Wandb-visualization/README.md)

@@ -70,3 +70,4 @@ Congratulations! You have run your first training job on LUMI. The next chapter 
 - [Monitoring and Profiling jobs](../monitoring-and-profiling/README.md)
 - [TensorBoard visualization](../TensorBoard-visualization/README.md)
 - [MLflow visualization](../MLflow-visualization/README.md)
+- [Wandb visualization](../Wandb-visualization/README.md)
