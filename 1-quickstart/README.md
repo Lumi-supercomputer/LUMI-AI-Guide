@@ -13,7 +13,7 @@ We recommend using your `/project/` or `/scratch/` directory of your project to 
 Next, navigate to the `LUMI-AI-Guide/quickstart` directory:
 
 ```bash
-cd LUMI-AI-Guide/quickstart
+cd LUMI-AI-Guide/1-quickstart
 ```
 
 We now need to setup the environment if we wish to run the included python scripts. We will use one of the provided PyTorch containers that we extend with additional packages (this step will be explained in more detail in the next chapter [Setting up your own environment](../2-setting-up-environment/README.md)). The fastest way to achieve this is to use the provided script `set_up_environment.sh`:
