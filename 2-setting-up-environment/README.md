@@ -24,7 +24,7 @@ If you choose one of the containers in `/appl/local/containers/sif-images/` for 
 
 ## Interacting with a containerized environment
 
-The Python environment from an image can be accessed either interactively by spawning a shell instance within a container (`singularity shell` command) or by executing commands within a container (`singularity exec` command). <ins>Do not expect actual runscripts (`singularity run` command), you need to execute your own script inside the container.</ins> <sup>I don't follow the logic of this sentence. perhaps a change in phrasing and or an example could help.</sup>
+The Python environment from an image can be accessed either interactively by spawning a shell instance within a container (`singularity shell` command) or by executing commands within a container (`singularity exec` command). Do not expect there to be premade runscripts (`singularity run` command) within the container, you need to execute your own script inside the container.
 
 These commonly used assumptions are good to keep in mind:
 
