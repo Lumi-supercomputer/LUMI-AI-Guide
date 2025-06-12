@@ -45,7 +45,7 @@ The command
 
 ```
 salloc -p small-g --nodes=1 --gpus-per-node=2 --ntasks-per-node=1 --cpus-per-task=14 --time=3 \
-    --account=project_xxxxxxxxxx #specify your project id here
+    --account=project_xxxxxxxxx #specify your project id here
 ```
 
 allocates 2 GPUs and 14 CPUs from a single compute node for a 3 minute job. We can then print out the number of detected GPUs via the following command:
