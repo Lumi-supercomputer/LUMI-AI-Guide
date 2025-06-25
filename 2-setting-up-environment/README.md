@@ -6,21 +6,21 @@ Machine learning frameworks on LUMI serve as isolated environments in the form o
 
 The motivation for using containers on LUMI is twofold: 
 
- - compatibility with ROCm (GPU runtime) and Slingshot network (inter-node communication), 
- - filesystem friendliness (encapsulation helps reduce the overhead on the filesystem from accessing numerous small files).
+- compatibility with ROCm (GPU runtime) and Slingshot network (inter-node communication), 
+- filesystem friendliness (encapsulation helps reduce the overhead on the filesystem from accessing numerous small files).
 
-Note that the first point implies that LUMI's containers are not portable to other machines, which is usually expected from containers, as these images are unlikely to run on other systems.
+Note that the first point implies that LUMI's containers are **not portable to other machines**, which is usually expected from containers, as these images are unlikely to run on other systems.
 
 There are two different ways how containers that are provided by the LUMI User Support Team can be accessed:
 
- - [Through modules and wrapper scripts generated via EasyBuild](https://lumi-supercomputer.github.io/LUMI-EasyBuild-docs/p/PyTorch/#module-and-wrapper-scripts)
- - Directly, with you taking care of all bindings and all necessary environment variables.
+- [Through modules and wrapper scripts generated via EasyBuild](https://lumi-supercomputer.github.io/LUMI-EasyBuild-docs/p/PyTorch/#module-and-wrapper-scripts)
+- Directly, with you taking care of all bindings and all necessary environment variables.
 
 In this example we will use the second option as this approach is used in the [LUMI AI workshop material](https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop).
 
 The latest versions of the provided containers can be found at `/appl/local/containers/sif-images`. This folder includes base containers, following the naming convention `lumi-rocm-<rocm version number>.sif` and containers that already include a ML framework and some commonly used packages. The names of the `.sif` files indicate which ML framework is installed and which versions are used for `ROCm`, `Python` and the framework. 
 
-If you choose one of the containers in `/appl/local/containers/sif-images/` for your own project, we recommend copying the container to your working directory as the containers are constantly updated and the newer containers might not be compatible with your setup.
+If you choose one of the containers in `/appl/local/containers/sif-images/` for your own project, we recommend copying the container to your working directory, as the containers are constantly updated. Newer containers might not be compatible with your setup.
 
 ## Interacting with a containerized environment
 
@@ -28,8 +28,8 @@ The Python environment from an image can be accessed either interactively by spa
 
 These commonly used assumptions are good to keep in mind:
 
- - most of base images on LUMI use conda (Miniconda) environments that need to be activated with the `$WITH_CONDA` command,
- - there is a basic compiler toolchain included, note specific compiler commands (`gcc-XX` for specific versions installed).
+- most of base images on LUMI use conda (Miniconda) environments that need to be activated with the `$WITH_CONDA` command,
+- there is a basic compiler toolchain included, note specific compiler commands (`gcc-XX` for specific versions installed).
 
 To inspect which specific packages are included in the images you can use this simple command:
 
