@@ -3,11 +3,11 @@
 > [!NOTE]  
 > If you wish to run the included examples on LUMI, have a look at the [quickstart](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/tree/main/1-quickstart#readme) chapter for instructions on how to set up the required environment.
 
-Training Deep Learning models is a resource-intensive task. When the compute and memory resources of a single GPU no longer suffice to train your model, multi-GPU and multi-node solutions can be leveraged to distribute your training job over multiple GPUs or nodes. Various strategies exist to distribute Deep Learning workloads, and various frameworks exist that implement those strategies. In this section, we cover two popular methods: data-parallelism using PyTorch's Distributed Data-Parallel (DDP) module and a mix of data parallelism and model sharding using the DeepSpeed library. We describe the neccessary changes to the source code and how to launch the distributed training jobs on LUMI.
+Training Deep Learning models is a resource-intensive task. When the compute and memory resources of a single GPU no longer suffice to train your model, multi-GPU and multi-node solutions can be leveraged to distribute your training job over multiple GPUs or nodes. Various strategies exist to distribute Deep Learning workloads, and various frameworks exist that implement those strategies. In this section, we cover two popular methods: data-parallelism using PyTorch's Distributed Data-Parallel (DDP) module and a mix of data parallelism and model sharding using the DeepSpeed library. We describe the necessary changes to the source code and how to launch the distributed training jobs on LUMI.
 
 ## PyTorch DDP
 
-PyTorch DDP can be used to implement data-parallelism in your training job. Data-parallel solutions are particularly useful when you would like to speed up the training process and your model fits in the memory of a single GPU. For example when you are training on a large dataset.
+PyTorch DDP can be used to implement data-parallelism in your training job. Data-parallel solutions are particularly useful when you would like to speed up the training process and your model fits in the memory of a single GPU. For example, when you are training on a large dataset.
 
 ### Source code changes
 The script in [ddp_visualtransformer.py](ddp_visualtransformer.py) implements PyTorch DDP on the visualtransformer example. The following changes to the source code are necessary:
@@ -110,7 +110,7 @@ srun singularity exec $CONTAINER bash -c "export RANK=\$SLURM_PROCID && export L
                                                                                 $WITH_CONDA && source visualtransformer-env/bin/activate && \
                                                                                 python ddp_visualtransformer.py"
 ```
-Note that the `RANK` and `LOCAL_RANK` environement variables are exported inside the container and cannot be exported in the Slurm script, as they are only available inside the Slurm jobstep (after srun has launched the process).
+Note that the `RANK` and `LOCAL_RANK` environment variables are exported inside the container and cannot be exported in the Slurm script, as they are only available inside the Slurm jobstep (after srun has launched the process).
 
 ##### Multi-node
 The jobscript to run the PyTorch DDP example on 4 full LUMI-G nodes is [run_ddp_srun_4.sh](run_ddp_srun_4.sh).
@@ -191,7 +191,7 @@ The file ds_config.json contains the DeepSpeed configuration parameters. Some im
   },
 
   "fp16": {
-    "enabled": false,
+    "enabled": false
   }
 }
 ```
@@ -263,7 +263,7 @@ Then we run as follows:
 ```bash
 srun --cpu-bind=v,mask_cpu=$CPU_BIND_MASKS singularity exec $CONTAINER bash -c 'export CXX=g++-12; export RANK=$SLURM_PROCID; export LOCAL_RANK=$SLURM_LOCALID; $WITH_CONDA && source visualtransformer-env/bin/activate && python ds_visualtransformer.py --deepspeed --deepspeed_config ds_config.json'
 ```
-Note that the `RANK` and `LOCAL_RANK` environement variables are exported inside the container and cannot be exported in the Slurm script, as they are only available inside the Slurm jobstep (after srun has launched the process).
+Note that the `RANK` and `LOCAL_RANK` environment variables are exported inside the container and cannot be exported in the Slurm script, as they are only available inside the Slurm jobstep (after srun has launched the process).
 
 ##### Multi-node
 The jobscript to run the DeepSpeed example on 4 full LUMI-G nodes is [run_ds_srun_4.sh](run_ds_srun_4.sh).
