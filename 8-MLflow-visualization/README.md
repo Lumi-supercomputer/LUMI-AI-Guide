@@ -18,7 +18,7 @@ if rank == 0:
     mlflow.start_run(run_name=os.getenv("SLURM_JOB_ID"))
 ```
 
-With `mlflow.set_tracking_uri()` we set the location where the MLflow files should be stored, replace it with the appropriate path for your own project in the example. If you don't set a location, it will create a directory called mlruns in your current working directory.
+With `mlflow.set_tracking_uri()` we set the location where the MLflow files should be stored, replace it with the appropriate path for your own project. If you don't set a location, it will create a directory called `mlruns` in your current working directory.
 
 Instead of a directory, you can also use an SQLite database, just start the tracking location with `sqlite://`, for example:
 
@@ -30,17 +30,16 @@ Instead of setting the tracking URI in the Python code, you can also set it usin
 
 It is not mandatory to set a name for the run, but in the example above we show how to use the Slurm job id for the name.
 
-Finally in the code where you calculate metrics that you wish to track you need to add a line to track it with MLflow. Adapting our code to include these metrics looks like so:
+Finally, in the code where you calculate metrics that you wish to track, you need to add a line to track it with MLflow. Adapting our code to include these metrics looks like so:
 
 ```python
 if rank == 0:
     print(f'Epoch {epoch+1}, Loss: {running_loss/len(train_loader)}')
-    mlflow.log_metric("loss", running_loss/len(train_loader), step = epoch)
+    mlflow.log_metric("loss", running_loss/len(train_loader), step=epoch)
 ...
 if rank == 0:
     print(f'Accuracy: {100 * correct / total}%')
-    mlflow.log_metric("accuracy", correct / total, step = epoch)
-
+    mlflow.log_metric("accuracy", correct / total, step=epoch)
 ```
 
 For a full example, have a look at the script [mlflow_ddp_visualtransformer.py](mlflow_ddp_visualtransformer.py).
@@ -49,7 +48,7 @@ In addition to metrics, you can also log parameters and artifacts. See the [MLfl
 
 ## Visualizing the logs
 
-To visualize and monitor your runs you can start the MLflow tracking UI using the LUMI web  interface.
+To visualize and monitor your runs you can start the MLflow tracking UI using the LUMI web interface.
 
 To launch it, log in to the web interface at [https://www.lumi.csc.fi/](https://www.lumi.csc.fi/) and select "MLflow" from the "Apps" menu. In the submission form you need to select where the MLflow files are stored. This is the same path that you used for the `mlflow.set_tracking_uri()` method, i.e., typically:
 
