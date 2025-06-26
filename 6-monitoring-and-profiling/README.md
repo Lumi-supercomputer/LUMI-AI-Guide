@@ -1,4 +1,4 @@
-x# 6. Monitoring and Profiling jobs
+# 6. Monitoring and Profiling jobs
 
 > [!NOTE]  
 > If you wish to run the included examples on LUMI, have a look at the [quickstart](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/tree/main/1-quickstart#readme) chapter for instructions on how to set up the required environment.
