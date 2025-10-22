@@ -12,9 +12,9 @@ module use  /appl/local/containers/ai-modules
 module load singularity-AI-bindings
 
 # choose container that is copied over by set_up_environment.sh
-CONTAINER=../resources/lumi-pytorch-rocm-6.2.1-python-3.12-pytorch-20240918-vllm-4075b35.sif
+CONTAINER=../resources/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.7.1.sif
 
 # add path to additional packages in squasfs file
 export SINGULARITYENV_PREPEND_PATH=/user-software/bin
 # bind squashfs file into container and run python script inside container 
-singularity exec -B ../resources/visualtransformer-env.sqsh:/user-software:image-src=/ $CONTAINER python visualtransformer.py
+singularity exec -B ../resources/visiontransformer-env.sqsh:/user-software:image-src=/ $CONTAINER python visiontransformer.py

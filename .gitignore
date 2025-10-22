@@ -168,6 +168,6 @@ cython_debug/
 venv-extension/
 data-formats/
 timings/
-visualtransformer-env
+visiontransformer-env
 *out
 *~

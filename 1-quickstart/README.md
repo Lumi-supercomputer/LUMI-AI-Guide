@@ -1,6 +1,6 @@
 # 1. QuickStart
 
-This chapter covers how to set up the environment to run the [`visualtransformer.py`](visualtransformer.py) script on LUMI. 
+This chapter covers how to set up the environment to run the [`visiontransformer.py`](visiontransformer.py) script on LUMI. 
 
 First, you clone this repository to LUMI via the following command:
 
@@ -28,11 +28,11 @@ If you receive a permission denied error, you can make the script executable by 
 chmod +x set_up_environment.sh
 ```
 
-After the script has finished, you should see now some new files in the `LUMI-AI-Guide/resources/` directory. These files are the PyTorch container (the file ending with `.sif`), a squashFs file containing additional python packages (`visualtransformer-env.sqsh`), the training dataset in a `hdf5` file format (`train_images.hdf5`) and two directories starting with `deepspeed_*` (these directories are needed for running the deepspeed example). 
+After the script has finished, you should see now some new files in the `LUMI-AI-Guide/resources/` directory. These files are the PyTorch container (the file ending with `.sif`), a squashFs file containing additional python packages (`visiontransformer-env.sqsh`), the training dataset in a `hdf5` file format (`train_images.hdf5`) and two directories starting with `deepspeed_*` (these directories are needed for running the deepspeed example). 
 
 For this example, we use the [Tiny ImageNet Dataset](https://paperswithcode.com/dataset/tiny-imagenet) which is already transformed into the file system friendly hdf5 format (Chapter [File formats for training data](../3-file-formats/README.md) explains in detail why this step is necessary). Please have a look at the terms of access for the ImageNet Dataset [here](https://www.image-net.org/download.php).
 
-To run the Visual Transformer example, we need to use a batch job script. We provide a batch job script [`run.sh`](run.sh) that you can use to run the [`visualtransformer.py`](visualtransformer.py) script on a single GPU on a LUMI-G node. 
+To run the Visual Transformer example, we need to use a batch job script. We provide a batch job script [`run.sh`](run.sh) that you can use to run the [`visiontransformer.py`](visiontransformer.py) script on a single GPU on a LUMI-G node. 
 A quickstart to SLURM is provided in the [LUMI documentation](https://docs.lumi-supercomputer.eu/runjobs/scheduled-jobs/slurm-quickstart/). 
 
 To run the provided script yourself, you need to replace the `--account` flag in line 2 of the [`run.sh`](run.sh) script with your own project account. You can find your project account by running the command `lumi-workspaces`.
