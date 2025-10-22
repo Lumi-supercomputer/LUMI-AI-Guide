@@ -7,7 +7,7 @@
 
 ## Collecting logs
 
-TensorBoard can be used to [visualize models, data, and training with PyTorch](https://pytorch.org/tutorials/intermediate/tensorboard_tutorial.html). We can also configure TensorBoard to collect metrics from distributed execution. We will use the VisualTransformer classification example, which utilizes Distributed Data Parallel for distributed execution, and adapt it to collect some metrics to TensorBoard.
+TensorBoard can be used to [visualize models, data, and training with PyTorch](https://pytorch.org/tutorials/intermediate/tensorboard_tutorial.html). We can also configure TensorBoard to collect metrics from distributed execution. We will use the Vision Transformer classification example, which utilizes Distributed Data Parallel for distributed execution, and adapt it to collect some metrics to TensorBoard.
 
 Since during distributed runs we use multiple processes, we set one of the processes to be responsible for collecting the logs. This can be done by using the `rank` environment variable assigned to every process created by Slurm. We can use this variable to assign the task of logging to the first process (rank 0). With just a few additions we can display some of the training images and loss, but additional metrics can be added using similar methods. 
 
