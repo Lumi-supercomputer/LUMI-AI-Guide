@@ -9,7 +9,3 @@ echo "Copying container, training data and squashfs file to ../resources/ direct
 cp /appl/local/training/LUMI-AI-Guide/tiny-imagenet-dataset.hdf5 ../resources/train_images.hdf5
 cp /appl/local/training/LUMI-AI-Guide/visualtransformer-env-pytorch-v2.7.1.sqsh ../resources/visiontransformer-env.sqsh 
 cp /appl/local/containers/sif-images/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.7.1.sif ../resources/
-
-# For the deepspeed examples, we need to copy the following two directories to ../resources/ 
-cp -r /appl/local/training/LUMI-AI-Guide/deepspeed_adam ../resources/
-cp -r /appl/local/training/LUMI-AI-Guide/deepspeed_includes ../resources/
