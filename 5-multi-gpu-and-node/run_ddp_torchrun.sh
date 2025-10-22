@@ -21,4 +21,4 @@ export NCCL_SOCKET_IFNAME=hsn0,hsn1,hsn2,hsn3
 export NCCL_NET_GDR_LEVEL=PHB
 
 export SINGULARITYENV_PREPEND_PATH=/user-software/bin
-srun singularity exec -B ../resources/visualtransformer-env.sqsh:/user-software:image-src=/ $CONTAINER bash -c 'python -m torch.distributed.run --standalone --nnodes=1 --nproc_per_node=8 ddp_visualtransformer.py'
+srun singularity exec -B ../resources/visiontransformer-env.sqsh:/user-software:image-src=/ $CONTAINER bash -c 'python -m torch.distributed.run --standalone --nnodes=1 --nproc_per_node=8 ddp_visiontransformer.py'

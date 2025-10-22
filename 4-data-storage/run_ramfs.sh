@@ -18,8 +18,8 @@ CONTAINER=../resources/lumi-pytorch-rocm-6.2.1-python-3.12-pytorch-20240918-vllm
 # add path to additional packages in squasfs file
 export SINGULARITYENV_PREPEND_PATH=/user-software/bin
 # bind squashfs file into container and run python script inside container 
-srun singularity exec  -B ../resources/visualtransformer-env.sqsh:/user-software:image-src=/ $CONTAINER bash -c '
+srun singularity exec  -B ../resources/visiontransformer-env.sqsh:/user-software:image-src=/ $CONTAINER bash -c '
   time cp -a ../resources/train_images.hdf5 /tmp/. ;
-  time python visualtransformer_ramfs.py  ;
+  time python visiontransformer_ramfs.py  ;
   time /bin/cp -a /tmp/vit_b_16_imagenet.pth ./vit_b_16_imagenet.pth.$$ ;
   time /bin/cp -a /tmp/train_images.hdf5     ../resources/train_images.hdf5.$$'

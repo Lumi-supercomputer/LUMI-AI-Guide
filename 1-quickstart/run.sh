@@ -17,4 +17,4 @@ CONTAINER=../resources/lumi-pytorch-rocm-6.2.1-python-3.12-pytorch-20240918-vllm
 # add path to additional packages in squasfs file
 export SINGULARITYENV_PREPEND_PATH=/user-software/bin
 # bind squashfs file into container and run python script inside container 
-singularity exec -B ../resources/visualtransformer-env.sqsh:/user-software:image-src=/ $CONTAINER python visualtransformer.py
+singularity exec -B ../resources/visiontransformer-env.sqsh:/user-software:image-src=/ $CONTAINER python visiontransformer.py

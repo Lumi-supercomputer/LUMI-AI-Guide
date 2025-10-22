@@ -32,7 +32,7 @@ rank = int(os.environ["RANK"])
 if rank == 0:
     wandb.init(
         # set the wandb project where this run will be logged
-        project="LUMI-visualtransformer",
+        project="LUMI-visiontransformer",
         name="Example run",
 
         # track hyperparameters and run metadata
@@ -65,15 +65,15 @@ wandb: - Waiting for wandb.init()...^Mwandb: \ Waiting for wandb.init()...^Mwand
 wandb: Run data is saved locally in /pfs/lustrep1/scratch/project_xxxxxxxxx/dir/wandb/wandb/run-20250217_125546-0ztzgx0x
 wandb: Run `wandb offline` to turn off syncing.
 wandb: Syncing run Example run
-wandb: ⭐️ View project at https://wandb.ai/<organization>/LUMI-visualtransformer
-wandb: 🚀 View run at https://wandb.ai/<organization>/LUMI-visualtransformer/runs/0ztzgx0x
+wandb: ⭐️ View project at https://wandb.ai/<organization>/LUMI-visiontransformer
+wandb: 🚀 View run at https://wandb.ai/<organization>/LUMI-visiontransformer/runs/0ztzgx0x
 
 ```
 
 
 ## Wandb Web Interface
 
-Navigate to https://wandb.ai/home to inspect the logs. `LUMI-visualtransformer` (the project name we provided in the initialization) should be visible under `Your recent projects`. After selecting the project, you should be able to see the run that was just executed, which we named `Example run`. 
+Navigate to https://wandb.ai/home to inspect the logs. `LUMI-visionltransformer` (the project name we provided in the initialization) should be visible under `Your recent projects`. After selecting the project, you should be able to see the run that was just executed, which we named `Example run`. 
 
 Under `Overview` you will be able to find general statistics of the run, such as the parameters we specified in the configuration, GPU count, Python version, run duration and so on.
 

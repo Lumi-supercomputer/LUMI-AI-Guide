@@ -7,7 +7,7 @@
 
 ## Collecting logs
 
-Enabling MLflow tracking in your Python code is simple. Some libraries support [automatic logging with MLflow](https://www.mlflow.org/docs/latest/tracking.html#automatic-logging), but even if the library you are using does not, logging can be added with just a few lines of code. For example, in our visualtransformer code we add the following lines:
+Enabling MLflow tracking in your Python code is simple. Some libraries support [automatic logging with MLflow](https://www.mlflow.org/docs/latest/tracking.html#automatic-logging), but even if the library you are using does not, logging can be added with just a few lines of code. For example, in our visiontransformer code we add the following lines:
 
 ```python
 import mlflow
@@ -42,7 +42,7 @@ if rank == 0:
     mlflow.log_metric("accuracy", correct / total, step=epoch)
 ```
 
-For a full example, have a look at the script [mlflow_ddp_visualtransformer.py](mlflow_ddp_visualtransformer.py).
+For a full example, have a look at the script [mlflow_ddp_visiontransformer.py](mlflow_ddp_visiontransformer.py).
 
 In addition to metrics, you can also log parameters and artifacts. See the [MLflow documentation for a list of logging functions](https://www.mlflow.org/docs/latest/tracking.html#logging-data-to-runs).
 
