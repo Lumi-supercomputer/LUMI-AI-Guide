@@ -14,7 +14,7 @@ module use  /appl/local/containers/ai-modules
 module load singularity-AI-bindings
 
 # choose container that is copied over by set_up_environment.sh
-CONTAINER=../resources/lumi-pytorch-rocm-6.2.1-python-3.12-pytorch-20240918-vllm-4075b35.sif
+CONTAINER=../resources/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.7.1.sif
 
 # Tell RCCL to use Slingshot interfaces and GPU RDMA
 export NCCL_SOCKET_IFNAME=hsn0,hsn1,hsn2,hsn3
@@ -31,6 +31,4 @@ CPU_BIND_MASKS="0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000
 export SINGULARITYENV_PREPEND_PATH=/user-software/bin
 srun --cpu-bind=v,mask_cpu=$CPU_BIND_MASKS singularity exec \
  	-B ../resources/visiontransformer-env.sqsh:/user-software:image-src=/ \
-        -B ../resources/deepspeed_adam:/user-software/lib/python3.12/site-packages/deepspeed/ops/csrc/adam \
-        -B ../resources/deepspeed_includes:/user-software/lib/python3.12/site-packages/deepspeed/ops/csrc/includes \
       	$CONTAINER bash -c 'export CXX=g++-12; export RANK=$SLURM_PROCID; export LOCAL_RANK=$SLURM_LOCALID; python ds_visiontransformer.py --deepspeed --deepspeed_config ds_config.json'

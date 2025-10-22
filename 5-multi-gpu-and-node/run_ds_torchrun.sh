@@ -14,7 +14,7 @@ module use  /appl/local/containers/ai-modules
 module load singularity-AI-bindings
 
 # choose container that is copied over by set_up_environment.sh
-CONTAINER=../resources/lumi-pytorch-rocm-6.2.1-python-3.12-pytorch-20240918-vllm-4075b35.sif
+CONTAINER=../resources/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.7.1.sif
 
 export MASTER_ADDR=$(scontrol show hostnames $SLURM_JOB_NODELIST | head -n 1)
 export MASTER_PORT=29500
@@ -23,6 +23,4 @@ export SINGULARITYENV_PREPEND_PATH=/user-software/bin
 
 srun singularity exec \
 	-B ../resources/visiontransformer-env.sqsh:/user-software:image-src=/ \
-	-B ../resources/deepspeed_adam:/user-software/lib/python3.12/site-packages/deepspeed/ops/csrc/adam \
-	-B ../resources/deepspeed_includes:/user-software/lib/python3.12/site-packages/deepspeed/ops/csrc/includes \
 	$CONTAINER bash -c 'export CXX=g++-12; python -m torch.distributed.run --nproc_per_node 8 --nnodes $SLURM_NNODES --node_rank $SLURM_PROCID --master_addr $MASTER_ADDR --master_port $MASTER_PORT ds_visiontransformer.py --deepspeed --deepspeed_config ds_config.json'
