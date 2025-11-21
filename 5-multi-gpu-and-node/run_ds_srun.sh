@@ -14,7 +14,7 @@ module use /appl/local/containers/ai-modules
 module load singularity-AI-bindings
 
 # choose container that is copied over by set_up_environment.sh
-CONTAINER=../resources/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.7.1.sif
+CONTAINER=../resources/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.7.0.sif
 
 # Tell RCCL to use Slingshot interfaces and GPU RDMA
 export NCCL_SOCKET_IFNAME=hsn0,hsn1,hsn2,hsn3
