@@ -8,8 +8,13 @@ from hdf5_dataset import HDF5Dataset
 import torch.distributed as dist
 from torch.utils.data.distributed import DistributedSampler
 import psutil
+import sys
 
 import wandb
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from resources.hdf5_dataset import HDF5Dataset
+
 
 # The performance of the CPU mapping needs to be tested
 def set_cpu_affinity(local_rank):
