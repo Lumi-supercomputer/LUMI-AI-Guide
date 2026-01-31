@@ -1,6 +1,6 @@
 # LUMI AI guide
 
-This guide is designed to assist users in migrating their machine learning applications from smaller-scale computing environments to LUMI. We will walk you through a detailed example of training an image classification model using [PyTorch's Vision Transformer (VIT)](https://pytorch.org/vision/main/models/vision_transformer.html) on the [ImageNet dataset](https://www.image-net.org/).
+This guide is designed to assist users in migrating their machine learning applications from smaller-scale computing environments to the LUMI supercomputer. We will walk you through a detailed example of training an image classification model using [PyTorch's Vision Transformer (VIT)](https://pytorch.org/vision/main/models/vision_transformer.html) on the [ImageNet dataset](https://www.image-net.org/).
 
 All Python and bash scripts referenced in this guide are accessible in this [GitHub repository](https://github.com/Lumi-supercomputer/LUMI-AI-example/tree/main). We start with a basic python script, [visiontransformer.py](1-quickstart/visiontransformer.py), that could run on your local machine and modify it over the next chapters to run it efficiently on LUMI.
 
