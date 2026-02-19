@@ -7,8 +7,9 @@ All Python and bash scripts referenced in this guide are accessible in this [Git
 Even though this guide uses PyTorch, most of the covered topics are independent of the used machine learning framework. We therefore believe this guide is helpful for all new ML users on LUMI while also providing a concrete example that runs on LUMI.
 
 > [!IMPORTANT] 
-> The [LUMI AI Factory](lumi-ai-factory.eu) now offers ready-to-use PyTorch containers on LUMI, designed to help new users get started quickly without a lengthy setup process. You can find more details about these containers in the [LUMI AI Factory AI Software Environment documentation](https://docs.lumi-supercomputer.eu/laif/software/ai-environment/).
-This guide will be updated soon, but at the moment older containers are used. Most things should work very similar.
+> The [LUMI AI Factory](lumi-ai-factory.eu) will be the main provider of PyTorch containers on LUMI in the future. 
+> You can find more details about these containers in the [LUMI AI Factory AI Software Environment documentation](https://docs.lumi-supercomputer.eu/laif/software/ai-environment/).
+> This guide will be updated soon to use the new containers. We expect minor changes, but please read the documentation.
 
 ### Requirements
 
