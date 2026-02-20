@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# this module facilitates the use of singularity containers on LUMI
-module use /appl/local/containers/ai-modules
-module load singularity-AI-bindings
-
 # Please have a look at the terms of access (https://www.image-net.org/download.php) before using the dataset
-echo "Copying container, training data and squashfs file to ../resources/ directory."
+echo "Copying training data to ../resources/ directory."
 cp /appl/local/training/LUMI-AI-Guide/tiny-imagenet-dataset.hdf5 ../resources/train_images.hdf5
-cp /appl/local/training/LUMI-AI-Guide/visualtransformer-env-pytorch-v2.7.0.sqsh ../resources/visiontransformer-env.sqsh 
-cp /appl/local/containers/sif-images/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.7.0.sif ../resources/
