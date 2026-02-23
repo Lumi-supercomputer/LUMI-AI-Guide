@@ -33,7 +33,7 @@ def set_cpu_affinity(local_rank):
     psutil.Process().cpu_affinity(cpu_list)
 
 
-def train_model(model, criterion, optimizer, train_loader, val_loader, epochs, local_rank):
+def train_model(model, criterion, optimizer, train_loader, val_loader, epochs, rank):
     # note that "cuda" is used as a general reference to GPUs,
     # even when running on AMD GPUs that use ROCm
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -56,7 +56,7 @@ def train_model(model, criterion, optimizer, train_loader, val_loader, epochs, l
 
             running_loss += loss.item()
 
-        if local_rank == 0:
+        if rank == 0:
             print(f"Epoch {epoch+1}, Loss: {running_loss/len(train_loader)}")
 
         # Validation step, note that only results from rank 0 are used here.
@@ -71,10 +71,10 @@ def train_model(model, criterion, optimizer, train_loader, val_loader, epochs, l
                 total += labels.size(0)
                 correct += (predicted == labels).sum().item()
 
-        if local_rank == 0:
+        if rank == 0:
             print(f"Accuracy: {100 * correct / total}%")
 
-    if local_rank == 0:
+    if rank == 0:
         print(f"Time elapsed (s): {time.time()-start}")
 
 
@@ -125,7 +125,7 @@ with HDF5Dataset(
     )
 
     train_model(model, criterion, optimizer, train_loader,
-                val_loader, epochs=10, local_rank=local_rank)
+                val_loader, epochs=10, rank=rank)
 
     dist.destroy_process_group()
 
