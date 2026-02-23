@@ -57,7 +57,7 @@ def train_model(model, criterion, optimizer, train_loader, val_loader, epochs, r
             running_loss += loss.item()
 
         if rank == 0:
-            print(f"Epoch {epoch+1}, Loss: {running_loss/len(train_loader)}")
+            print(f"Epoch {epoch+1}, Training Loss: {running_loss/len(train_loader)}")
 
         # Validation step, note that only results from rank 0 are used here.
         model.eval()
@@ -72,7 +72,7 @@ def train_model(model, criterion, optimizer, train_loader, val_loader, epochs, r
                 correct += (predicted == labels).sum().item()
 
         if rank == 0:
-            print(f"Accuracy: {100 * correct / total}%")
+            print(f"Validation Accuracy: {100 * correct / total}%")
 
     if rank == 0:
         print(f"Time elapsed (s): {time.time()-start}")
