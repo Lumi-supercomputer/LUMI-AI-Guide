@@ -13,8 +13,6 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from resources.hdf5_dataset import HDF5Dataset
 
-
-# The performance of the CPU mapping needs to be tested
 def set_cpu_affinity(local_rank):
     LUMI_GPU_CPU_map = {
         # A mapping from GCD to the closest CPU cores in a LUMI-G node
@@ -35,38 +33,13 @@ def set_cpu_affinity(local_rank):
     psutil.Process().cpu_affinity(cpu_list)
 
 
-dist.init_process_group(backend="nccl")
-
-local_rank = int(os.environ["LOCAL_RANK"])
-torch.cuda.set_device(local_rank)
-rank = int(os.environ["RANK"])
-set_cpu_affinity(local_rank)
-
-# Define transformations
-transform = transforms.Compose(
-    [
-        transforms.Resize(256),
-        transforms.CenterCrop(224),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-    ]
-)
-
-
-model = vit_b_16(weights="DEFAULT").to(local_rank)
-model = DistributedDataParallel(model, device_ids=[local_rank])
-
-criterion = torch.nn.CrossEntropyLoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-
-
-def train_model(model, criterion, optimizer, train_loader, val_loader, epochs=10):
+def train_model(model, criterion, optimizer, train_loader, val_loader, epochs, local_rank):
     # note that "cuda" is used as a general reference to GPUs,
     # even when running on AMD GPUs that use ROCm
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
 
-    if rank == 0:
+    if local_rank == 0:
         start = time.time()
 
     for epoch in range(epochs):
@@ -83,7 +56,7 @@ def train_model(model, criterion, optimizer, train_loader, val_loader, epochs=10
 
             running_loss += loss.item()
 
-        if rank == 0:
+        if local_rank == 0:
             print(f"Epoch {epoch+1}, Loss: {running_loss/len(train_loader)}")
 
         # Validation step, note that only results from rank 0 are used here.
@@ -98,12 +71,37 @@ def train_model(model, criterion, optimizer, train_loader, val_loader, epochs=10
                 total += labels.size(0)
                 correct += (predicted == labels).sum().item()
 
-        if rank == 0:
+        if local_rank == 0:
             print(f"Accuracy: {100 * correct / total}%")
 
-    if rank == 0:
+    if local_rank == 0:
         print(f"Time elapsed (s): {time.time()-start}")
 
+
+if __name__ == "__main__":
+    dist.init_process_group(backend="nccl")
+
+    local_rank = int(os.environ["LOCAL_RANK"])
+    torch.cuda.set_device(local_rank)
+    rank = int(os.environ["RANK"])
+    set_cpu_affinity(local_rank)
+
+    # Define transformations
+    transform = transforms.Compose(
+        [
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[
+                                 0.229, 0.224, 0.225]),
+        ]
+    )
+
+    model = vit_b_16(weights="DEFAULT").to(local_rank)
+    model = DistributedDataParallel(model, device_ids=[local_rank])
+
+    criterion = torch.nn.CrossEntropyLoss()
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
 with HDF5Dataset(
     "../resources/train_images.hdf5", transform=transform
@@ -126,7 +124,8 @@ with HDF5Dataset(
         val_dataset, sampler=val_sampler, batch_size=32, num_workers=7
     )
 
-    train_model(model, criterion, optimizer, train_loader, val_loader)
+    train_model(model, criterion, optimizer, train_loader,
+                val_loader, epochs=10, local_rank=local_rank)
 
     dist.destroy_process_group()
 
