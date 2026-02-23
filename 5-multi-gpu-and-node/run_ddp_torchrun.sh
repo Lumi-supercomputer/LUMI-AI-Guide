@@ -22,4 +22,4 @@ SIF=/appl/local/laifs/containers/lumi-multitorch-u24r64f21m43t29-20260216_093549
 export NCCL_SOCKET_IFNAME=hsn0,hsn1,hsn2,hsn3
 export NCCL_NET_GDR_LEVEL=PHB
 
-singularity run $SIF bash -c 'source /scratch/project_462000131/marlonto/LUMI-AI-Guide/resources/ai-guide-env/bin/activate && python -m torch.distributed.run --standalone --nnodes=1 --nproc_per_node=8 ddp_visiontransformer.py'
+srun singularity run $SIF bash -c 'source /scratch/project_462000131/marlonto/LUMI-AI-Guide/resources/ai-guide-env/bin/activate && python -m torch.distributed.run --standalone --nnodes=1 --nproc_per_node=8 ddp_visiontransformer.py'

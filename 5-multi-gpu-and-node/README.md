@@ -60,7 +60,7 @@ The jobscript to run the PyTorch DDP example on a single LUMI-G node with all 4 
 We use the `torchrun` launcher, which will launch 8 processes on the node:
 
 ```bash
-srun singularity exec $SIF bash -c '$WITH_CONDA && source visiontransformer-env/bin/activate && python -m torch.distributed.run --standalone --nnodes=1 --nproc_per_node=8 ddp_visiontransformer.py'
+srun singularity run $SIF bash -c 'source /scratch/project_462000131/marlonto/LUMI-AI-Guide/resources/ai-guide-env/bin/activate && python -m torch.distributed.run --standalone --nnodes=1 --nproc_per_node=8 ddp_visiontransformer.py'
 ```
 
 ##### Multi-node
