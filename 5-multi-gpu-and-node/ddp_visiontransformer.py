@@ -103,30 +103,30 @@ if __name__ == "__main__":
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
-with HDF5Dataset(
-    "../resources/train_images.hdf5", transform=transform
-) as full_train_dataset:
+    with HDF5Dataset(
+        "../resources/train_images.hdf5", transform=transform
+    ) as full_train_dataset:
 
-    # Splitting the dataset into train and validation sets
-    train_size = int(0.8 * len(full_train_dataset))
-    val_size = len(full_train_dataset) - train_size
-    train_dataset, val_dataset = random_split(
-        full_train_dataset, [train_size, val_size]
-    )
+        # Splitting the dataset into train and validation sets
+        train_size = int(0.8 * len(full_train_dataset))
+        val_size = len(full_train_dataset) - train_size
+        train_dataset, val_dataset = random_split(
+            full_train_dataset, [train_size, val_size]
+        )
 
-    train_sampler = DistributedSampler(train_dataset)
-    train_loader = DataLoader(
-        train_dataset, sampler=train_sampler, batch_size=32, num_workers=7
-    )
+        train_sampler = DistributedSampler(train_dataset)
+        train_loader = DataLoader(
+            train_dataset, sampler=train_sampler, batch_size=32, num_workers=7
+        )
 
-    val_sampler = DistributedSampler(val_dataset)
-    val_loader = DataLoader(
-        val_dataset, sampler=val_sampler, batch_size=32, num_workers=7
-    )
+        val_sampler = DistributedSampler(val_dataset)
+        val_loader = DataLoader(
+            val_dataset, sampler=val_sampler, batch_size=32, num_workers=7
+        )
 
-    train_model(model, criterion, optimizer, train_loader,
-                val_loader, epochs=10, rank=rank)
+        train_model(model, criterion, optimizer, train_loader,
+                    val_loader, epochs=10, rank=rank)
 
-    dist.destroy_process_group()
+        dist.destroy_process_group()
 
-torch.save(model.state_dict(), "vit_b_16_imagenet.pth")
+    torch.save(model.state_dict(), "vit_b_16_imagenet.pth")
