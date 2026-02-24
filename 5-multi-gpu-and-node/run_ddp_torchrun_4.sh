@@ -9,7 +9,7 @@
 #SBATCH --cpus-per-task=56
 #SBATCH --mem=480G
 
-# this module facilitates the use of singularity containers on LUMI
+# this module facilitates the use of LUMI AIF singularity containers on LUMI
 module purge
 module use /appl/local/laifs/modules
 module load lumi-aif-singularity-bindings
