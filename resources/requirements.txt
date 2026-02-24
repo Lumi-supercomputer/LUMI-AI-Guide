@@ -1,0 +1,2 @@
+h5py
+mlflow==2.22.* # required only for part 8s
