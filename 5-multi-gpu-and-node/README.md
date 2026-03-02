@@ -218,7 +218,7 @@ export MASTER_PORT=29500
 
 We use the `torchrun` launcher, which will launch 8 processes on the node:
 ```bash
-srun singularity exec $CONTAINER bash -c 'export CXX=g++-12; $WITH_CONDA && source visiontransformer-env/bin/activate && python -m torch.distributed.run --nproc_per_node 8 --nnodes $SLURM_NNODES --node_rank $SLURM_PROCID --master_addr $MASTER_ADDR --master_port $MASTER_PORT ds_visiontransformer.py --deepspeed --deepspeed_config ds_config.json'
+srun singularity run $SIF bash -c 'export CXX=g++-12; source /scratch/project_462000131/marlonto/LUMI-AI-Guide/resources/ai-guide-env/bin/activate && python -m torch.distributed.run --nproc_per_node 8 --nnodes $SLURM_NNODES --node_rank $SLURM_PROCID --master_addr $MASTER_ADDR --master_port $MASTER_PORT ds_visiontransformer.py --deepspeed --deepspeed_config ds_config.json'
 ```
 
 ##### Multi-node
@@ -232,7 +232,7 @@ To run on multiple nodes, we adjust the job requirements:
 
 And pass the `--rdzv_*` parameters to the launcher:
 ```bash
-srun singularity exec $CONTAINER bash -c 'export CXX=g++-12; $WITH_CONDA && source visiontransformer-env/bin/activate && python -m torch.distributed.run --nnodes=$SLURM_JOB_NUM_NODES --nproc_per_node=8 --node_rank $SLURM_PROCID --rdzv_id=\$SLURM_JOB_ID --rdzv_backend=c10d --rdzv_endpoint="$MASTER_ADDR:$MASTER_PORT" ds_visiontransformer.py --deepspeed --deepspeed_config ds_config.json'
+srun singularity run $SIF bash -c 'export CXX=g++-12; source /scratch/project_462000131/marlonto/LUMI-AI-Guide/resources/ai-guide-env/bin/activate && python -m torch.distributed.run --nnodes=$SLURM_JOB_NUM_NODES --nproc_per_node=8 --node_rank $SLURM_PROCID --rdzv_id=\$SLURM_JOB_ID --rdzv_backend=c10d --rdzv_endpoint="$MASTER_ADDR:$MASTER_PORT" ds_visiontransformer.py --deepspeed --deepspeed_config ds_config.json'
 ```
 
 
@@ -259,7 +259,7 @@ export WORLD_SIZE=$SLURM_NPROCS
 
 Then we run as follows:
 ```bash
-srun --cpu-bind=v,mask_cpu=$CPU_BIND_MASKS singularity exec $CONTAINER bash -c 'export CXX=g++-12; export RANK=$SLURM_PROCID; export LOCAL_RANK=$SLURM_LOCALID; $WITH_CONDA && source visiontransformer-env/bin/activate && python ds_visiontransformer.py --deepspeed --deepspeed_config ds_config.json'
+srun --cpu-bind=v,mask_cpu=$CPU_BIND_MASKS singularity run $SIF bash -c 'export CXX=g++-12; export RANK=$SLURM_PROCID; export LOCAL_RANK=$SLURM_LOCALID; source /scratch/project_462000131/marlonto/LUMI-AI-Guide/resources/ai-guide-env/bin/activate && python ds_visiontransformer.py --deepspeed --deepspeed_config ds_config.json'
 ```
 Note that the `RANK` and `LOCAL_RANK` environment variables are exported inside the container and cannot be exported in the Slurm script, as they are only available inside the Slurm jobstep (after srun has launched the process).
 
