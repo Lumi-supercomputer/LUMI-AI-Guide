@@ -3,6 +3,12 @@
 > [!NOTE]  
 > The Python and shell scripts in the `file-formats` directory are used for the benchmarks presented in this chapter. Many of them require packages that are not included in the environment that is set up in the [QuickStart](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/tree/main/1-quickstart#readme) chapter. If you wish to install additional packages and run these scripts yourself, have a look at the [Setting up your own environment](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/tree/main/2-setting-up-environment#readme) chapter.
 
+> [!IMPORTANT] 
+> PyTorch containers on LUMI will in the future be provided by the [LUMI AI Factory](lumi-ai-factory.eu). 
+> The part 3 of this guide will soon be updated to utilize these new containers. The containers currently referenced in this guide remain available on LUMI but will no longer receive updates. However, all examples included in this guide will continue to work as they currently do. 
+> For more information about the new containers, refer to the [LUMI AI Factory AI Software Environment documentation](https://docs.lumi-supercomputer.eu/laif/software/ai-environment/).
+
+
 ## Introduction
 
 Generally, there is no one-size-fits-all file format suitable for all machine learning and artificial intelligence data. Different high-performance file formats have different strategies for increasing the read/write throughput, and these strategies might not be compatible with the format of the data (e.g. variable image sizes). As a result, this compatibility must be determined before an optimal file format can be chosen. 

@@ -8,7 +8,7 @@ Even though this guide uses PyTorch, most of the covered topics are independent 
 
 > [!IMPORTANT] 
 > PyTorch containers on LUMI will in the future be provided by the [LUMI AI Factory](lumi-ai-factory.eu). 
-> This guide will soon be updated to utilize these new containers. The containers currently referenced in this guide remain available on LUMI but will no longer receive updates. However, all examples included in this guide will continue to work as they currently do. 
+> This guide apart from [3. File formats for training data](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/tree/main/3-file-formats#readme) was updated to utilize these new containers. The containers currently referenced that part remain available on LUMI but will no longer receive updates. However, all examples included in this guide will continue to work as they currently do.
 > For more information about the new containers, refer to the [LUMI AI Factory AI Software Environment documentation](https://docs.lumi-supercomputer.eu/laif/software/ai-environment/).
 
 ### Requirements
