@@ -55,7 +55,7 @@ The Python environment from an image can be accessed either interactively by spa
 To inspect which specific packages are included in the images you can use this simple command:
 
 ```
-export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r64f21m43t29-20260216_093549/lumi-multitorch-full-u24r64f21m43t29-20260216_093549.sif
+export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r64f21m43t29-20260225_144743/lumi-multitorch-full-u24r64f21m43t29-20260225_144743.sif
 singularity run $SIF pip list
 ``` 
 
@@ -71,7 +71,7 @@ The command
 module purge
 module use /appl/local/laifs/modules
 module load lumi-aif-singularity-bindings
-export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r64f21m43t29-20260216_093549/lumi-multitorch-full-u24r64f21m43t29-20260216_093549.sif
+export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r64f21m43t29-20260225_144743/lumi-multitorch-full-u24r64f21m43t29-20260225_144743.sif
 srun -A <your-project-id> -p small-g -n 1 --gpus-per-task=1 singularity run $SIF python -c "import torch; print(torch.cuda.device_count())"
 ```
 
@@ -97,7 +97,7 @@ You might find yourself in a situation where none of the provided containers con
 module purge
 module use /appl/local/laifs/modules
 module load lumi-aif-singularity-bindings
-export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r64f21m43t29-20260216_093549/lumi-multitorch-full-u24r64f21m43t29-20260216_093549.sif
+export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r64f21m43t29-20260225_144743/lumi-multitorch-full-u24r64f21m43t29-20260225_144743.sif
 singularity shell $SIF
 Singularity> python -m venv h5-env --system-site-packages
 Singularity> source h5-env/bin/activate
@@ -107,7 +107,7 @@ Singularity> source h5-env/bin/activate
 This will create an `h5-env` environment in the working directory. The `--system-site-packages` flag gives the virtual environment access to the packages from the container. Now one can execute a script with and import the `h5py` package. To execute a script called `my-script.py` within the container using the virtual environment, use the additional activation command:
 
 ```
-export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r64f21m43t29-20260216_093549/lumi-multitorch-full-u24r64f21m43t29-20260216_093549.sif
+export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r64f21m43t29-20260225_144743/lumi-multitorch-full-u24r64f21m43t29-20260225_144743.sif
 singularity run $SIF bash -c 'source h5-env/bin/activate && python my-script.py'
 ```
 

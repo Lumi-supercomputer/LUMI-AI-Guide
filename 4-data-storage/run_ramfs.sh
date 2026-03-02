@@ -13,7 +13,7 @@ module use /appl/local/laifs/modules
 module load lumi-aif-singularity-bindings
 
 # choose container
-SIF=/appl/local/laifs/containers/lumi-multitorch-u24r64f21m43t29-20260216_093549/lumi-multitorch-full-u24r64f21m43t29-20260216_093549.sif
+SIF=/appl/local/laifs/containers/lumi-multitorch-u24r64f21m43t29-20260225_144743/lumi-multitorch-full-u24r64f21m43t29-20260225_144743.sif
 
 # run python script inside container 
 singularity run $SIF bash -c '

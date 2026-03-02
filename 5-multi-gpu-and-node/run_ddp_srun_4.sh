@@ -15,7 +15,7 @@ module use /appl/local/laifs/modules
 module load lumi-aif-singularity-bindings
 
 # choose container
-SIF=/appl/local/laifs/containers/lumi-multitorch-u24r64f21m43t29-20260216_093549/lumi-multitorch-full-u24r64f21m43t29-20260216_093549.sif
+SIF=/appl/local/laifs/containers/lumi-multitorch-u24r64f21m43t29-20260225_144743/lumi-multitorch-full-u24r64f21m43t29-20260225_144743.sif
 
 # Tell RCCL to use Slingshot interfaces and GPU RDMA
 export NCCL_SOCKET_IFNAME=hsn0,hsn1,hsn2,hsn3
