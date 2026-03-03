@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --account=project_462000131
+#SBATCH --account=project_xxxxxxxxx
 #SBATCH --partition=standard-g
 #SBATCH --nodes=4
 #SBATCH --gpus-per-node=8
@@ -13,6 +13,11 @@
 module purge
 module use /appl/local/laifs/modules
 module load lumi-aif-singularity-bindings
+
+# set MIOPEN temp folder
+MIOPEN_DIR=$(mktemp -d)
+export MIOPEN_CUSTOM_CACHE_DIR=$MIOPEN_DIR/cache
+export MIOPEN_USER_DB=$MIOPEN_DIR/config
 
 # choose container
 SIF=/appl/local/laifs/containers/lumi-multitorch-u24r64f21m43t29-20260225_144743/lumi-multitorch-full-u24r64f21m43t29-20260225_144743.sif
@@ -29,5 +34,7 @@ export LOCAL_WORLD_SIZE=$SLURM_GPUS_PER_NODE
 # Set up the CPU bind masks
 CPU_BIND_MASKS="0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000000fe000000,0x00000000000000fe,0x000000000000fe00,0x000000fe00000000,0x0000fe0000000000"
 
-srun --cpu-bind=v,mask_cpu=$CPU_BIND_MASKS singularity run \
-      	$SIF bash -c 'export CXX=g++-12; export RANK=$SLURM_PROCID; export LOCAL_RANK=$SLURM_LOCALID; source /scratch/project_462000131/marlonto/LUMI-AI-Guide/resources/ai-guide-env/bin/activate && python ds_visiontransformer.py --deepspeed --deepspeed_config ds_config.json'
+export SINGULARITYENV_PREPEND_PATH=/user-software/bin # gives access to packages inside the container
+
+srun --cpu-bind=v,mask_cpu=$CPU_BIND_MASKS singularity run -B ../resources/ai-guide-env.sqsh:/user-software:image-src=/ \
+      	$SIF bash -c 'export CXX=g++-12; export RANK=$SLURM_PROCID; export LOCAL_RANK=$SLURM_LOCALID; python ds_visiontransformer.py --deepspeed --deepspeed_config ds_config.json'

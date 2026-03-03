@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --account=project_462000131
+#SBATCH --account=project_xxxxxxxxx
 #SBATCH --partition=small-g
 #SBATCH --gpus-per-node=1
 #SBATCH --ntasks-per-node=1
@@ -12,15 +12,23 @@ module purge
 module use /appl/local/laifs/modules
 module load lumi-aif-singularity-bindings
 
+# set MIOPEN temp folder
+MIOPEN_DIR=$(mktemp -d)
+export MIOPEN_CUSTOM_CACHE_DIR=$MIOPEN_DIR/cache
+export MIOPEN_USER_DB=$MIOPEN_DIR/config
+
 # choose container
 SIF=/appl/local/laifs/containers/lumi-multitorch-u24r64f21m43t29-20260225_144743/lumi-multitorch-full-u24r64f21m43t29-20260225_144743.sif
 
+# add path to additional packages in squasfs file
+export SINGULARITYENV_PREPEND_PATH=/user-software/bin
+
 # run python script inside container 
-singularity run $SIF bash -c '
+srun singularity run -B ../resources/ai-guide-env.sqsh:/user-software:image-src=/ $SIF bash -c '
   echo "Copying training data to /tmp/";
   time cp -a ../resources/train_images.hdf5 /tmp/. ;
   echo "Running training";
-  source /scratch/project_462000131/marlonto/LUMI-AI-Guide/resources/ai-guide-env/bin/activate && time python visiontransformer_ramfs.py  ;
+  time python visiontransformer_ramfs.py  ;
   echo "Copying checkpoint back from /tmp/";
   time /bin/cp -a /tmp/vit_b_16_imagenet.pth ./vit_b_16_imagenet.pth.$$ ;
   echo "Copying training data from /tmp/ ";

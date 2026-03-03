@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --account=project_462000131
+#SBATCH --account=project_xxxxxxxxx
 #SBATCH --partition=standard-g
 #SBATCH --nodes=1
 #SBATCH --gpus-per-node=8
@@ -15,6 +15,11 @@ module purge
 module use /appl/local/laifs/modules
 module load lumi-aif-singularity-bindings
 
+# set MIOPEN temp folder
+MIOPEN_DIR=$(mktemp -d)
+export MIOPEN_CUSTOM_CACHE_DIR=$MIOPEN_DIR/cache
+export MIOPEN_USER_DB=$MIOPEN_DIR/config
+
 # choose container
 SIF=/appl/local/laifs/containers/lumi-multitorch-u24r64f21m43t29-20260225_144743/lumi-multitorch-full-u24r64f21m43t29-20260225_144743.sif
 
@@ -22,4 +27,6 @@ SIF=/appl/local/laifs/containers/lumi-multitorch-u24r64f21m43t29-20260225_144743
 export NCCL_SOCKET_IFNAME=hsn0,hsn1,hsn2,hsn3
 export NCCL_NET_GDR_LEVEL=PHB
 
-srun singularity run $SIF bash -c 'source /scratch/project_462000131/marlonto/LUMI-AI-Guide/resources/ai-guide-env/bin/activate && python -m torch.distributed.run --standalone --nnodes=1 --nproc_per_node=8 ddp_visiontransformer.py'
+export SINGULARITYENV_PREPEND_PATH=/user-software/bin # gives access to packages inside the container
+
+singularity run -B ../resources/ai-guide-env.sqsh:/user-software:image-src=/ $SIF bash -c 'python -m torch.distributed.run --standalone --nnodes=1 --nproc_per_node=8 ddp_visiontransformer.py'
