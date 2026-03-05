@@ -45,9 +45,8 @@ sbatch run.sh
 
 Once the job starts running, a `slurm-<jobid>.out` file will be created in the `quickstart` directory. This file contains the output of the job and will be updated as the job progresses.
 
-!!! Info "Module purge warnings"
-    Note that we do a `module purge` at the beginning of the script. This will cause some warnings that some modules were not unloaded or could not be reloaded.
-    It is save to ignore these warnings at this point.
+*Note that we do a `module purge` at the beginning of the script. This will cause some warnings that some modules were not unloaded or could not be reloaded.
+It is save to ignore these warnings at this point.*
 
 
 The output will show Training Loss and Validation Accuracy values for each epoch, similar to the following:
