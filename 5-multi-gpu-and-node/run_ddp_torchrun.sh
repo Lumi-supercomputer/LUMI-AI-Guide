@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --account=project_xxxxxxxxx
+#SBATCH --account=project_462000131
 #SBATCH --partition=standard-g
 #SBATCH --nodes=1
 #SBATCH --gpus-per-node=8

@@ -23,7 +23,7 @@ export MIOPEN_USER_DB=$MIOPEN_DIR/config
 SIF=/appl/local/laifs/containers/lumi-multitorch-u24r64f21m43t29-20260225_144743/lumi-multitorch-full-u24r64f21m43t29-20260225_144743.sif
 
 export MASTER_ADDR=$(scontrol show hostnames $SLURM_JOB_NODELIST | head -n 1)
-export MASTER_PORT=29500
+export MASTER_PORT="1${SLURM_JOB_ID:0-4}" # set port based on SLURM_JOB_ID to avoid conflicts
 
 export SINGULARITYENV_PREPEND_PATH=/user-software/bin # gives access to packages inside the container
 

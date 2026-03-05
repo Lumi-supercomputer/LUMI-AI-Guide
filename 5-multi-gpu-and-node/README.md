@@ -75,7 +75,7 @@ We set the environment variables that will be used for the distributed initializ
 
 ```bash
 export MASTER_ADDR=$(scontrol show hostnames $SLURM_JOB_NODELIST | head -n 1)
-export MASTER_PORT=29500
+export MASTER_PORT="1${SLURM_JOB_ID:0-4}" # set port based on SLURM_JOB_ID to avoid conflicts
 ```
 
 And run with `torchrun`, passing the `--rdzv_*` parameters to the launcher:
@@ -99,7 +99,7 @@ Torch Distributed uses a number of environment variables to initialize the distr
 
 ```bash
 export MASTER_ADDR=$(scontrol show hostnames $SLURM_JOB_NODELIST | head -n 1)
-export MASTER_PORT=29500
+export MASTER_PORT="1${SLURM_JOB_ID:0-4}" # set port based on SLURM_JOB_ID to avoid conflicts
 export WORLD_SIZE=$SLURM_NPROCS
 #export LOCAL_WORLD_SIZE=$SLURM_GPUS_PER_NODE
 ```
@@ -213,7 +213,7 @@ DeepSpeed uses a number of environment variables to initialize the distributed e
 
 ```bash
 export MASTER_ADDR=$(scontrol show hostnames $SLURM_JOB_NODELIST | head -n 1)
-export MASTER_PORT=29500
+export MASTER_PORT="1${SLURM_JOB_ID:0-4}" # set port based on SLURM_JOB_ID to avoid conflicts
 ```
 
 We use the `torchrun` launcher, which will launch 8 processes on the node:
@@ -252,7 +252,7 @@ DeepSpeed uses a number of environment variables to initialize the distributed e
 
 ```bash
 export MASTER_ADDR=$(scontrol show hostnames $SLURM_JOB_NODELIST | head -n 1)
-export MASTER_PORT=29500
+export MASTER_PORT="1${SLURM_JOB_ID:0-4}" # set port based on SLURM_JOB_ID to avoid conflicts
 export WORLD_SIZE=$SLURM_NPROCS
 #export LOCAL_WORLD_SIZE=$SLURM_GPUS_PER_NODE
 ```
