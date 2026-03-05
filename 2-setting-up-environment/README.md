@@ -37,7 +37,7 @@ The [releases on GitHub](https://github.com/lumi-ai-factory/laifs-container-reci
 
 The name of the container includes a timestamp and version identifier. It is explained in the [releases on GitHub](https://github.com/lumi-ai-factory/laifs-container-recipes/releases).
 
-For users running AI applications based on PyTorch the containers starting with `lumi-multitorch-full-*` are most likely the best starting point. Advanced users can build on intermediate containers to customize to their use cases. We aim to release containers for jax or other software in the future.
+For users running AI applications based on PyTorch, the containers starting with `lumi-multitorch-full-*` are most likely the best starting point. Advanced users can build on intermediate containers to customize to their use cases.
 
 
 ### Access to container images
