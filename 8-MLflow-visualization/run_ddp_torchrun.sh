@@ -29,4 +29,4 @@ export NCCL_NET_GDR_LEVEL=PHB
 export SINGULARITYENV_PREPEND_PATH=/user-software/bin # gives access to packages inside the container
 
 # need to create sqsh file with mlflow included
-srun singularity run -B ../resources/ai-guide-ml-flow-env.sqsh:/user-software:image-src=/ $SIF bash -c 'python -m torch.distributed.run --standalone --nnodes=1 --nproc_per_node=8 mlflow_ddp_visiontransformer.py'
+srun singularity run -B ../resources/ai-guide-env.sqsh:/user-software:image-src=/ $SIF bash -c 'python -m torch.distributed.run --standalone --nnodes=1 --nproc_per_node=8 mlflow_ddp_visiontransformer.py'
