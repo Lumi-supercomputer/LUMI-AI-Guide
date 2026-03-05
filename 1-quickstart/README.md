@@ -28,7 +28,7 @@ If you receive a permission denied error, you can make the script executable by 
 chmod +x set_up_environment.sh
 ```
 
-After the script has finished, you will see now two new sfile in the `LUMI-AI-Guide/resources/` directory. One is the training dataset in a `hdf5` file format (`train_images.hdf5`). The other one is the virtual python enviroment in a `sqfs` file format (`ai-guide-env.sqsh`).
+After the script has finished, you will see now two new files in the `LUMI-AI-Guide/resources/` directory. One is the training dataset in a `hdf5` file format (`train_images.hdf5`). The other one is the virtual python enviroment in a `sqfs` file format (`ai-guide-env.sqsh`).
 
 For this example, we use the [Tiny ImageNet Dataset](https://paperswithcode.com/dataset/tiny-imagenet) which is already transformed into the file system friendly hdf5 format (Chapter [File formats for training data](../3-file-formats/README.md) explains in detail why this step is necessary). Please have a look at the terms of access for the ImageNet Dataset [here](https://www.image-net.org/download.php).
 
