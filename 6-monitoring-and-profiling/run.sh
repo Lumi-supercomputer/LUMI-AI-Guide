@@ -21,4 +21,4 @@ export MIOPEN_USER_DB=$MIOPEN_DIR/config
 SIF=/appl/local/laifs/containers/lumi-multitorch-u24r64f21m43t29-20260225_144743/lumi-multitorch-full-u24r64f21m43t29-20260225_144743.sif
 
 export SINGULARITYENV_PREPEND_PATH=/user-software/bin # gives access to packages inside the container
-singularity run -B ../resources/ai-guide-env.sqsh:/user-software:image-src=/ $SIF bash -c 'python visiontransformer.py'
+singularity run -B ../resources/ai-guide-env.sqsh:/user-software:image-src=/ $SIF bash -c 'python visiontransformer_profiled.py'

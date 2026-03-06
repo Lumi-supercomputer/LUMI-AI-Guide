@@ -13,9 +13,6 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from resources.hdf5_dataset import HDF5Dataset
 
-parser = argparse.ArgumentParser()
-parser = deepspeed.add_config_arguments(parser)
-args = parser.parse_args()
 
 
 def set_cpu_affinity(local_rank):
@@ -38,29 +35,7 @@ def set_cpu_affinity(local_rank):
     psutil.Process().cpu_affinity(cpu_list)
 
 
-local_rank = int(os.environ["LOCAL_RANK"])
-torch.cuda.set_device(local_rank)
-rank = int(os.environ["RANK"])
-set_cpu_affinity(local_rank)
-
-# Define transformations
-transform = transforms.Compose(
-    [
-        transforms.Resize(256),
-        transforms.CenterCrop(224),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-    ]
-)
-
-model = vit_b_16(weights="DEFAULT")
-criterion = torch.nn.CrossEntropyLoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-
-deepspeed.init_distributed()
-
-
-def train_model(args, model, criterion, optimizer, train_loader, val_loader, epochs=10):
+def train_model(args, model, criterion, optimizer, train_loader, val_loader, epochs, rank):
     model_engine, optimizer, _, _ = deepspeed.initialize(
         args=args, model=model, model_parameters=model.parameters()
     )
@@ -107,28 +82,53 @@ def train_model(args, model, criterion, optimizer, train_loader, val_loader, epo
     if rank == 0:
         print(f"Time elapsed (s): {time.time()-start}")
 
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser = deepspeed.add_config_arguments(parser)
+    args = parser.parse_args()
 
-with HDF5Dataset(
-    "../resources/train_images.hdf5", transform=transform
-) as full_train_dataset:
+    local_rank = int(os.environ["LOCAL_RANK"])
+    torch.cuda.set_device(local_rank)
+    rank = int(os.environ["RANK"])
+    set_cpu_affinity(local_rank)
 
-    # Splitting the dataset into train and validation sets
-    train_size = int(0.8 * len(full_train_dataset))
-    val_size = len(full_train_dataset) - train_size
-    train_dataset, val_dataset = random_split(
-        full_train_dataset, [train_size, val_size]
+    # Define transformations
+    transform = transforms.Compose(
+        [
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ]
     )
 
-    train_sampler = DistributedSampler(train_dataset)
-    train_loader = DataLoader(
-        train_dataset, sampler=train_sampler, batch_size=32, num_workers=7
-    )
+    model = vit_b_16(weights="DEFAULT")
+    criterion = torch.nn.CrossEntropyLoss()
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
-    val_sampler = DistributedSampler(val_dataset)
-    val_loader = DataLoader(
-        val_dataset, sampler=val_sampler, batch_size=32, num_workers=7
-    )
+    deepspeed.init_distributed()
 
-    train_model(args, model, criterion, optimizer, train_loader, val_loader)
+    with HDF5Dataset(
+        "../resources/train_images.hdf5", transform=transform
+    ) as full_train_dataset:
 
-torch.save(model.state_dict(), "vit_b_16_imagenet.pth")
+        # Splitting the dataset into train and validation sets
+        train_size = int(0.8 * len(full_train_dataset))
+        val_size = len(full_train_dataset) - train_size
+        train_dataset, val_dataset = random_split(
+            full_train_dataset, [train_size, val_size]
+        )
+
+        train_sampler = DistributedSampler(train_dataset)
+        train_loader = DataLoader(
+            train_dataset, sampler=train_sampler, batch_size=32, num_workers=7
+        )
+
+        val_sampler = DistributedSampler(val_dataset)
+        val_loader = DataLoader(
+            val_dataset, sampler=val_sampler, batch_size=32, num_workers=7
+        )
+
+        train_model(args, model, criterion, optimizer, train_loader, val_loader, epochs=10, rank=rank)
+
+    torch.save(model.state_dict(), "vit_b_16_imagenet.pth")
