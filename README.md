@@ -1,39 +1,47 @@
-# LUMI AI guide
+# LUMI AI Guide
 
-This guide is designed to assist users in migrating their machine learning applications from smaller-scale computing environments to the LUMI supercomputer. We will walk you through a detailed example of training an image classification model using [PyTorch's Vision Transformer (VIT)](https://pytorch.org/vision/main/models/vision_transformer.html) on the [ImageNet dataset](https://www.image-net.org/).
+This repository is a practical guide for moving machine learning training workloads to LUMI using a runnable Vision Transformer example in PyTorch.
 
-All Python and bash scripts referenced in this guide are accessible in this [GitHub repository](https://github.com/Lumi-supercomputer/LUMI-AI-example/tree/main). We start with a basic python script, [visiontransformer.py](1-quickstart/visiontransformer.py), that could run on your local machine and modify it over the next chapters to run it efficiently on LUMI.
+All Python and shell scripts referenced in this guide are part of this repository: [LUMI-AI-Guide](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/tree/main). The workflow starts from [`1-quickstart/visiontransformer.py`](1-quickstart/visiontransformer.py) and scales up chapter by chapter.
 
-Even though this guide uses PyTorch, most of the covered topics are independent of the used machine learning framework. We therefore believe this guide is helpful for all new ML users on LUMI while also providing a concrete example that runs on LUMI.
+## Goal
 
-> [!IMPORTANT] 
-> PyTorch containers on LUMI will in the future be provided by the [LUMI AI Factory](lumi-ai-factory.eu). 
-> This guide, apart from [3. File formats for training data](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/tree/main/3-file-formats#readme), was updated to utilize these new containers. The containers currently referenced in that part remain available on LUMI, but will no longer receive updates. However, all examples included in this guide will continue to work as they currently do.
-> For more information about the new containers, refer to the [LUMI AI Factory AI Software Environment documentation](https://docs.lumi-supercomputer.eu/laif/software/ai-environment/).
+Provide a clear core path from first single-GPU execution to distributed training, then optional experiment-tracking extensions on LUMI.
 
-### Requirements
+## Requirements
 
-Before proceeding, please ensure you meet the following prerequisites:
+Before starting, ensure you have:
 
-* A basic understanding of machine learning concepts and Python programming. This guide will focus primarily on aspects specific to training models on LUMI.
-* An active user account on LUMI and familiarity with its basic operations.
-* If you wish to run the included examples, you need to be part of a project with GPU hours on LUMI.
+- basic familiarity with Python and machine learning workflows
+- a LUMI user account and basic command-line/Slurm usage
+- a project with available GPU hours if you want to run the examples
 
-### Table of contents
+## Important account note
 
-The guide is structured into the following sections:
+This guide keeps `#SBATCH --account=...` lines inside job scripts for simple copy-run commands.
+Before submitting jobs, replace those account values with your own LUMI project account.
 
-- [1. QuickStart](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/tree/main/1-quickstart#readme)
-- [2. Setting up your own environment](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/tree/main/2-setting-up-environment#readme)
-- [3. File formats for training data](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/tree/main/3-file-formats#readme)
-- [4. Data Storage Options](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/tree/main/4-data-storage#readme)
-- [5. Multi-GPU and Multi-Node Training](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/tree/main/5-multi-gpu-and-node#readme)
-- [6. Monitoring and Profiling jobs](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/tree/main/6-monitoring-and-profiling#readme)
-- [7. TensorBoard visualization](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/tree/main/7-TensorBoard-visualization#readme)
-- [8. MLflow visualization](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/tree/main/8-MLflow-visualization#readme)
-- [9. Wandb visualization](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/tree/main/9-Wandb-visualization#readme)
-  
-### Further reading
+## Start here
+
+Begin with [0. How to use this guide](0-how-to-use-guide/README.md). Then follow core lessons `1` to `6`, and continue with optional lessons `7` to `9` if needed.
+
+## Core lessons (recommended order)
+
+- [0. How to use this guide](0-how-to-use-guide/README.md)
+- [1. QuickStart](1-quickstart/README.md)
+- [2. Setting up your own environment](2-setting-up-environment/README.md)
+- [3. File formats for training data](3-file-formats/README.md)
+- [4. Data Storage Options](4-data-storage/README.md)
+- [5. Multi-GPU and Multi-Node Training](5-multi-gpu-and-node/README.md)
+- [6. Monitoring and Profiling jobs](6-monitoring-and-profiling/README.md)
+
+## Optional lessons (experiment tracking)
+
+- [7. TensorBoard visualization](7-tensorboard-visualization/README.md)
+- [8. MLflow visualization](8-mlflow-visualization/README.md)
+- [9. W&B visualization](9-wandb-visualization/README.md)
+
+## Further reading
 
 - [LUMI Documentation](https://docs.lumi-supercomputer.eu/)
 - [LUMI AI Factory Services](https://docs.lumi-supercomputer.eu/software/local/lumi-aif/)
@@ -41,3 +49,7 @@ The guide is structured into the following sections:
 - [LUMI software library, TensorFlow](https://lumi-supercomputer.github.io/LUMI-EasyBuild-docs/t/TensorFlow/)
 - [LUMI software library, Jax](https://lumi-supercomputer.github.io/LUMI-EasyBuild-docs/j/jax/)
 - [Workshop material - Moving your AI training jobs to LUMI](https://lumi-supercomputer.github.io/LUMI-training-materials/ai-20240529/)
+
+## Navigation
+
+- Next: [0. How to use this guide](0-how-to-use-guide/README.md)
