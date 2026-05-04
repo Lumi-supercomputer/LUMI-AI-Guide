@@ -22,10 +22,5 @@ export MIOPEN_USER_DB=$MIOPEN_DIR/config
 # choose container
 SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
 
-# Tell RCCL to use Slingshot interfaces and GPU RDMA
-export NCCL_SOCKET_IFNAME=hsn0,hsn1,hsn2,hsn3
-export NCCL_NET_GDR_LEVEL=PHB
-
-export SINGULARITYENV_PREPEND_PATH=/user-software/bin # gives access to packages inside the container
 
 srun singularity run $SIF bash -c 'python -m torch.distributed.run --standalone --nnodes=1 --nproc_per_node=8 mlflow_ddp_visiontransformer.py'
