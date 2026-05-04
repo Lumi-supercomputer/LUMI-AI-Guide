@@ -18,13 +18,10 @@ export MIOPEN_CUSTOM_CACHE_DIR=$MIOPEN_DIR/cache
 export MIOPEN_USER_DB=$MIOPEN_DIR/config
 
 # choose container
-SIF=/appl/local/laifs/containers/lumi-multitorch-u24r64f21m43t29-20260225_144743/lumi-multitorch-full-u24r64f21m43t29-20260225_144743.sif
-
-# add path to additional packages in squasfs file
-export SINGULARITYENV_PREPEND_PATH=/user-software/bin
+SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
 
 # run python script inside container 
-srun singularity run -B ../resources/ai-guide-env.sqsh:/user-software:image-src=/ $SIF bash -c '
+srun singularity run $SIF bash -c '
   echo "Copying training data to /tmp/";
   time cp -a ../resources/train_images.hdf5 /tmp/. ;
   echo "Running training";

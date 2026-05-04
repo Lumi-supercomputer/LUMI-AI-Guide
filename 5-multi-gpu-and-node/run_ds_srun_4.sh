@@ -20,7 +20,7 @@ export MIOPEN_CUSTOM_CACHE_DIR=$MIOPEN_DIR/cache
 export MIOPEN_USER_DB=$MIOPEN_DIR/config
 
 # choose container
-SIF=/appl/local/laifs/containers/lumi-multitorch-u24r64f21m43t29-20260225_144743/lumi-multitorch-full-u24r64f21m43t29-20260225_144743.sif
+SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
 
 # Tell RCCL to use Slingshot interfaces and GPU RDMA
 export NCCL_SOCKET_IFNAME=hsn0,hsn1,hsn2,hsn3
@@ -34,7 +34,5 @@ export LOCAL_WORLD_SIZE=$SLURM_GPUS_PER_NODE
 # Set up the CPU bind masks
 CPU_BIND_MASKS="0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000000fe000000,0x00000000000000fe,0x000000000000fe00,0x000000fe00000000,0x0000fe0000000000"
 
-export SINGULARITYENV_PREPEND_PATH=/user-software/bin # gives access to packages inside the container
-
-srun --cpu-bind=v,mask_cpu=$CPU_BIND_MASKS singularity run -B ../resources/ai-guide-env.sqsh:/user-software:image-src=/ \
+srun --cpu-bind=v,mask_cpu=$CPU_BIND_MASKS singularity run \
       	$SIF bash -c 'export RANK=$SLURM_PROCID; export LOCAL_RANK=$SLURM_LOCALID; python ds_visiontransformer.py --deepspeed --deepspeed_config ds_config.json'
