@@ -19,6 +19,11 @@ MIOPEN_DIR=$(mktemp -d)
 export MIOPEN_CUSTOM_CACHE_DIR=$MIOPEN_DIR/cache
 export MIOPEN_USER_DB=$MIOPEN_DIR/config
 
+# Set your huggingface cache to scratch to avoid saving to home directory
+# See https://huggingface.co/docs/huggingface_hub/en/package_reference/environment_variables
+export HF_HUB_CACHE="/scratch/${SLURM_JOB_ACCOUNT}/${USER}/hfcache"
+mkdir -p "$HF_HUB_CACHE"
+
 # choose container
 SIF=/appl/local/laifs/containers/lumi-multitorch-u24r64f21m43t29-20260225_144743/lumi-multitorch-full-u24r64f21m43t29-20260225_144743.sif
 
