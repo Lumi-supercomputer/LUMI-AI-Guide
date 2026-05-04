@@ -25,13 +25,6 @@ export HF_HUB_CACHE="/scratch/${SLURM_JOB_ACCOUNT}/${USER}/hfcache"
 mkdir -p "$HF_HUB_CACHE"
 
 # choose container
-SIF=/appl/local/laifs/containers/lumi-multitorch-u24r64f21m43t29-20260225_144743/lumi-multitorch-full-u24r64f21m43t29-20260225_144743.sif
+SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
 
-# Tell RCCL to use Slingshot interfaces and GPU RDMA
-export NCCL_SOCKET_IFNAME=hsn0,hsn1,hsn2,hsn3
-export NCCL_NET_GDR_LEVEL=PHB
-
-export SINGULARITYENV_PREPEND_PATH=/user-software/bin # gives access to packages inside the container
-
-# need to create sqsh file with mlflow included
-srun singularity run -B ../resources/ai-guide-env.sqsh:/user-software:image-src=/ $SIF bash -c 'python -m torch.distributed.run --standalone --nnodes=1 --nproc_per_node=8 mlflow_ddp_visiontransformer.py'
+srun singularity run $SIF bash -c 'python -m torch.distributed.run --standalone --nnodes=1 --nproc_per_node=8 mlflow_ddp_visiontransformer.py'
