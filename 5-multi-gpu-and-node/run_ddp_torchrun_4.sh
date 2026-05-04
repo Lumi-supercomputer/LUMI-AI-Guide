@@ -4,7 +4,7 @@
 #SBATCH --nodes=4
 #SBATCH --gpus-per-node=8
 #SBATCH --time=1:00:00
-
+#SBATCH --output=slurm-%x-%j.out
 #SBATCH --tasks-per-node=1
 #SBATCH --cpus-per-task=56
 #SBATCH --mem=480G
@@ -19,17 +19,13 @@ MIOPEN_DIR=$(mktemp -d)
 export MIOPEN_CUSTOM_CACHE_DIR=$MIOPEN_DIR/cache
 export MIOPEN_USER_DB=$MIOPEN_DIR/config
 
-# Set your huggingface cache to scratch to avoid saving to home directory
-# See https://huggingface.co/docs/huggingface_hub/en/package_reference/environment_variables
-export HF_HUB_CACHE="/scratch/${SLURM_JOB_ACCOUNT}/${USER}/hfcache"
-mkdir -p "$HF_HUB_CACHE"
+# Set your TORCH_HOME cache to scratch to avoid saving to home directory
+# https://docs.pytorch.org/docs/2.11/hub.html#where-are-my-downloaded-models-saved
+export TORCH_HOME="/scratch/${SLURM_JOB_ACCOUNT}/${USER}/torch_home"
+mkdir -p "$TORCH_HOME"
 
 # choose container
 SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
-
-# Tell RCCL to use Slingshot interfaces and GPU RDMA
-export NCCL_SOCKET_IFNAME=hsn0,hsn1,hsn2,hsn3
-export NCCL_NET_GDR_LEVEL=PHB
 
 export MASTER_ADDR=$(scontrol show hostnames $SLURM_JOB_NODELIST | head -n 1)
 export MASTER_PORT="1${SLURM_JOB_ID:0-4}" # set port based on SLURM_JOB_ID to avoid conflicts
