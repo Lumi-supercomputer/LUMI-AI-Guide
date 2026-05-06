@@ -1,4 +1,4 @@
-# 1. QuickStart
+# 01. QuickStart
 
 This chapter covers how to set up the environment to run the [`visiontransformer.py`](visiontransformer.py) script on LUMI. 
 

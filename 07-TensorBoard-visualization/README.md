@@ -1,4 +1,4 @@
-# 7. TensorBoard visualization
+# 07. TensorBoard visualization
 
 > [!NOTE]  
 > If you wish to run the included examples on LUMI, have a look at the [quickstart](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/tree/main/01-quickstart#readme) chapter for instructions on how to set up the required environment.
