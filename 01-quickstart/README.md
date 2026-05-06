@@ -13,7 +13,7 @@ We recommend using your `/project/` or `/scratch/` directory of your project to 
 Next, navigate to the `LUMI-AI-Guide/quickstart` directory:
 
 ```bash
-cd LUMI-AI-Guide/1-quickstart
+cd LUMI-AI-Guide/01-quickstart
 ```
 
 We now need to setup the environment if we wish to run the included python scripts. We will use one of the provided PyTorch containers. The fastest way to achieve this is to use the provided script `set_up_environment.sh`:
@@ -30,7 +30,7 @@ chmod +x set_up_environment.sh
 
 After the script has finished, you will see now one new file in the `LUMI-AI-Guide/resources/` directory. It is the training dataset in a `hdf5` file format (`train_images.hdf5`).
 
-For this example, we use the [Tiny ImageNet Dataset](https://paperswithcode.com/dataset/tiny-imagenet) which is already transformed into the file system friendly hdf5 format (Chapter [File formats for training data](../3-file-formats/README.md) explains in detail why this step is necessary). Please have a look at the terms of access for the ImageNet Dataset [here](https://www.image-net.org/download.php).
+For this example, we use the [Tiny ImageNet Dataset](https://paperswithcode.com/dataset/tiny-imagenet) which is already transformed into the file system friendly hdf5 format (Chapter [File formats for training data](../03-file-formats/README.md) explains in detail why this step is necessary). Please have a look at the terms of access for the ImageNet Dataset [here](https://www.image-net.org/download.php).
 
 To run the Vision Transformer example, we need to use a batch job script. We provide a batch job script [`run.sh`](run.sh) that you can use to run the [`visiontransformer.py`](visiontransformer.py) script on a single GPU on a LUMI-G node. 
 A quickstart to SLURM is provided in the [LUMI documentation](https://docs.lumi-supercomputer.eu/runjobs/scheduled-jobs/slurm-quickstart/). 
@@ -68,7 +68,7 @@ Validation Accuracy: 20.945%
 Saving model to vit_b_16_imagenet.pth
 ```
 
-Congratulations! You have run your first training job on LUMI. The next chapter [Setting up your own environment](../2-setting-up-environment/README.md) will explain in more detail how the environment was set up and how you can set up your own environment for your AI projects on LUMI.
+Congratulations! You have run your first training job on LUMI. The next chapter [Setting up your own environment](../02-setting-up-environment/README.md) will explain in more detail how the environment was set up and how you can set up your own environment for your AI projects on LUMI.
 
  ### Table of contents
 
