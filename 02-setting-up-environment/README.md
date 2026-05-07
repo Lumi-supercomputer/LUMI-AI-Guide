@@ -92,7 +92,7 @@ If you prefer to set the bindings manually, we recommend taking a look at the [R
 
 ## Installing additional Python packages in a container 
 
-You might find yourself in a situation where none of the provided containers contain all Python packages you need. One possible way of adding custom packages not included in the image is to use a virtual environment on top of the conda environment. For this example, we need to add the HDF5 Python package `h5py` to the environment:
+You might find yourself in a situation where none of the provided containers contain all Python packages you need. One possible way of adding custom packages not included in the image is to use a virtual environment on top of the conda environment. For this example, we need to add the hyperparameter optimization Python package `optuna` to the environment:
 
 ```
 module purge
@@ -100,20 +100,37 @@ module use /appl/local/laifs/modules
 module load lumi-aif-singularity-bindings
 export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
 singularity shell $SIF
-Singularity> python -m venv h5-env --system-site-packages
-Singularity> source h5-env/bin/activate
-(h5-env) Singularity> pip install h5py
+Singularity> python -m venv optuna-env --system-site-packages
+Singularity> source optuna-env/bin/activate
+(h5-env) Singularity> pip install optuna
 ```
 
-This will create an `h5-env` environment in the working directory. The `--system-site-packages` flag gives the virtual environment access to the packages from the container. Now one can execute a script with and import the `h5py` package. To execute a script called `my-script.py` within the container using the virtual environment, use the additional activation command:
+This will create an `optuna-env` environment in the working directory. The `--system-site-packages` flag gives the virtual environment access to the packages from the container. Now one can execute a script with and import the `optuna` package. To execute a script called `my-script.py` within the container using the virtual environment, use the additional activation command:
 
 ```
 export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
-singularity run $SIF bash -c 'source h5-env/bin/activate && python my-script.py'
+singularity run $SIF bash -c 'source optuna-env/bin/activate && python my-script.py'
 ```
 
-This approach allows extending the environment without rebuilding the container from scratch every time a new package is added. The drawback is that the virtual environment is disjoint from the container, which makes it difficult to move, as the path to the virtual environment needs to be updated accordingly. Moreover, installing Python packages typically creates thousands of small files. This puts a lot of strain on the Lustre file system and might exceed your file quota.
-This problem can be solved by creating a new container using the [cotainr tool](https://lumi-supercomputer.github.io/LUMI-training-materials/ai-20241126/extra_06_BuildingContainers/) or turning the virtual environment directory into a [SquashFS file](https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop/blob/main/07_Extending_containers_with_virtual_environments_for_faster_testing/examples/extending_containers_with_venv.md). The examples included in this repository use the [SquashFS](https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop/blob/main/07_Extending_containers_with_virtual_environments_for_faster_testing/examples/extending_containers_with_venv.md) option.
+This approach allows extending the environment without rebuilding the container from scratch every time a new package is added. 
+
+### Adjustments for filesystem performance.
+Installing Python packages typically creates thousands of small files. This puts a lot of strain on the Lustre file system and might exceed your file quota. This problem can be solved by turning the virtual environment directory into a SquashFS file as follows:
+
+```
+mksquashfs optuna-env optuna-env.sqsh
+rm -rf optuna-env # the myenv directory can be deleted
+```
+
+To execute a script called `my-script.py` within the container using the squashfs use the following extra lines to enable the use of the packages:
+
+```
+export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
+export SINGULARITYENV_PREPEND_PATH=/user-software/bin # gives access to packages inside the container
+singularity run -B optuna-env.sqsh:/user-software:image-src=/ $SIF python my-script.py
+```
+
+Another option is creating a new container using the [cotainr tool](https://lumi-supercomputer.github.io/LUMI-training-materials/ai-20241126/extra_06_BuildingContainers/) or using `singularity build` as illustrated in the [LUMI Docs](https://docs.lumi-supercomputer.eu/laif/software/ai-environment/#build-new-containers-based-on-the-images).
 
 ## Custom images
 
