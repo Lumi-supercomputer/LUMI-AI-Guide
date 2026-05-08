@@ -9,7 +9,10 @@
 #SBATCH --time=00:30:00
 
 
-# --- 1. Configuration (Environment & Model) ---
+# Load the bindings to give LUMI containers access to the file system of the working directory
+module purge
+module use /appl/local/laifs/modules
+module load lumi-aif-singularity-bindings
 
 # Set MIOPEN temp folder
 MIOPEN_DIR=$(mktemp -d)
