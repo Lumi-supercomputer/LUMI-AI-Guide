@@ -15,6 +15,6 @@ python -m venv /user-software --system-site-packages
 
 # creating the squashfs file and removing the venv
 echo "Creating squashfs in: $SQUASHFS_NAME"
-mksquashfs $BUILD_DIR $SQUASHFS_NAME -processors 1
+mksquashfs $BUILD_DIR $SQUASHFS_NAME -processors 1 -no-xattrs
 rm -rf $BUILD_DIR
 echo "done"
