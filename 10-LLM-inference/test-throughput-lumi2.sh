@@ -33,7 +33,7 @@ export VLLM_CACHE_ROOT=/scratch/$SLURM_JOB_ACCOUNT/vllm-cache
 MODEL_NAME="Qwen/Qwen3.6-35B-A3B"
 
 
-# --- 3. Run offline benchmark ---
+# Run offline benchmark 
 srun singularity run \
     $SIF \
     vllm bench throughput \
