@@ -23,7 +23,7 @@ In this chapter, we use three distinct Python scripts to demonstrate different w
 - [`batched_inference_from_server.py`](batched_inference_from_server.py): send hundreds of prompts simultaneously to a running vLLM server for fast dataset processing or benchmarking.
 - [`batched_inference_from_Python.py`](batched_inference_from_Python.py): start vLLM directly in Python to load the model for fast dataset processing or benchmarking.
 
-## Workflow A: Server-Client Mode
+# Workflow A: Server-Client Mode
 Use this if you want to keep the model loaded and interact with it multiple times.
 
 ## Step 1: Start the vLLM server
