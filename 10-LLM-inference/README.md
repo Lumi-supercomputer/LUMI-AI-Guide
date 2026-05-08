@@ -111,7 +111,7 @@ Interacting with a running vLLM server requires you to be on the same compute no
 
 ---
 
-## Workflow B: Offline Python Mode
+# Workflow B: Offline Python Mode
 1. **Start an interactive GPU session.** Update your project ID and run this command to request resources and immediately enter the compute node shell:
     ```bash
     srun --partition=dev-g --nodes=1 --ntasks-per-node=1 --cpus-per-task=14 --gpus-per-node=2 --mem-per-gpu=60G --time=02:00:00 --account=project_xxxxxxxxx --pty bash
