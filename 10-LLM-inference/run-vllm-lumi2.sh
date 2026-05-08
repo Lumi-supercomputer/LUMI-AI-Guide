@@ -36,7 +36,7 @@ MODEL_NAME="Qwen/Qwen3.6-35B-A3B"
 SOCKET_FILE=$TMPDIR/vllm-$SLURM_JOB_ID.sock
 
 
-# --- 3. Start vLLM server ---
+# Start vLLM 
 srun singularity run \
     $SIF \
     vllm serve $MODEL_NAME \
