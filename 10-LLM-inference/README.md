@@ -36,9 +36,10 @@ sbatch run-vllm-lumi2.sh
 Remember: on LUMI, one physical AMD MI250X GPU consists of two GCDs (Graphics Compute Dies), each having 64GB of VRAM. In Slurm, when you request `--gpus-per-node=2`, you are actually requesting 2 GCDs, which effectively is one GPU.
 
 ### What the launch script does
+- **AI bindings:** We perform `module purge` and load `lumi-aif-singularity-bindings` to give LUMI containers access to the file system of the working directory.
 - **MIOpen Cache Redirection:** We redirect the cache of MIOpen (AMD's library of deep-learning primitives) to a temporary directory to avoid collisions with other users on the same node. 
-- **AI bindings:** We load `lumi-aif-singularity-bindings` to give LUMI containers access to the file system of the working directory.
 - **Storage Redirection:** LLM weights can exceed hundreds of gigabytes, far surpassing the 20GB limit of the default `home` directory. To handle this, the script sets the `HF_HOME` environment variable to your project’s `/scratch/` directory.
+- **vLLM cache redirection:** We redirect vLLM’s internal cache to your project’s `/scratch/` directory. This prevents the limited storage quota of your `$HOME` directory from being filled by temporary model artifacts.
 - **Private Communication:** Instead of hosting the server on a standard network port, the script creates a **Unix Domain Socket** (.sock file). There are two benefits of this approach:
     - **No Port Collisions:** It avoids the common "Address already in use" error that occurs if another user is using the same port on a shared node.
     - **Enhanced Security:** The socket acts as a private gateway, removing the need for an API key. Access is restricted by file permissions and being on the same node (since only users with a job allocation on that node can access it), preventing other LUMI users from using your model instance.
@@ -88,6 +89,7 @@ Interacting with a running vLLM server requires you to be on the same compute no
     ```bash
     export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
 
+    module purge
     module use /appl/local/laifs/modules
     module load lumi-aif-singularity-bindings
     ```
@@ -118,6 +120,7 @@ Interacting with a running vLLM server requires you to be on the same compute no
     ```
 2.  **Set required environment variables:**
     ```bash
+    module purge
     module use /appl/local/laifs/modules
     module load lumi-aif-singularity-bindings
 
@@ -152,7 +155,7 @@ srun singularity run \
 **Flags explained:**
 - `vllm bench throughput` sets vLLM in 'benchmarking' mode.
 - `--dataset-name sharegpt` is the dataset of prompts from real-world human/LLM conversations that is run through the model.
-- `--num-prompts 100` truncates the long dataset to 100 entries. 
+- `--num-prompts 1000` truncates the long dataset to 1000 entries. 
 
 ---
 
