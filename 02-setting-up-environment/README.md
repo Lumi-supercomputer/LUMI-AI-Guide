@@ -105,30 +105,34 @@ Singularity> source optuna-env/bin/activate
 (h5-env) Singularity> pip install optuna
 ```
 
-This will create an `optuna-env` environment in the working directory. The `--system-site-packages` flag gives the virtual environment access to the packages from the container. Now one can execute a script with and import the `optuna` package. To execute a script called `my-script.py` within the container using the virtual environment, use the additional activation command:
+This will create an `optuna-env` environment in the working directory. The `--system-site-packages` flag gives the virtual environment access to the packages from the container. Now one can execute a script with and import the `optuna` package. To execute a script called `test_new_packages.py` within the container using the virtual environment, use the additional activation command:
 
 ```
 export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
-singularity run $SIF bash -c 'source optuna-env/bin/activate && python my-script.py'
+singularity run $SIF bash -c 'source optuna-env/bin/activate && python test_new_packages.py'
 ```
+
+You can alternatively execute `sbatch run_venv.sh`. The output file should print out versions of `optuna` and `PyTorch`. It should also say `torch.cuda.is_available() True` to ensure that the PyTorch installation still supports GPUs.
 
 This approach allows extending the environment without rebuilding the container from scratch every time a new package is added. 
 
 ### Adjustments for filesystem performance.
-Installing Python packages typically creates thousands of small files. This puts a lot of strain on the Lustre file system and might exceed your file quota. This problem can be solved by turning the virtual environment directory into a SquashFS file as follows:
+Installing Python packages typically creates thousands of small files. This puts a lot of strain on the Lustre file system and might exceed your file quota. This problem can be solved by turning the virtual environment directory into a SquashFS file as follows (you can also execute `create_squashfs.sh` to create a squashfs file with the `optuna` package):
 
 ```
 mksquashfs optuna-env optuna-env.sqsh
 rm -rf optuna-env # the myenv directory can be deleted
 ```
 
-To execute a script called `my-script.py` within the container using the squashfs use the following extra lines to enable the use of the packages:
+To execute a script called `test_new_packages.py` within the container using the squashfs use the following extra lines to enable the use of the packages:
 
 ```
 export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
 export SINGULARITYENV_PREPEND_PATH=/user-software/bin # gives access to packages inside the container
-singularity run -B optuna-env.sqsh:/user-software:image-src=/ $SIF python my-script.py
+singularity run -B optuna-env.sqsh:/user-software:image-src=/ $SIF python test_new_packages.py
 ```
+
+You can alternatively execute `sbatch run_squashfs.sh`. The output file should print out versions of `optuna` and `PyTorch`. It should also say `torch.cuda.is_available() True` to ensure that the PyTorch installation still supports GPUs.
 
 Another option is creating a new container using the [cotainr tool](https://lumi-supercomputer.github.io/LUMI-training-materials/ai-20241126/extra_06_BuildingContainers/) or using `singularity build` as illustrated in the [LUMI Docs](https://docs.lumi-supercomputer.eu/laif/software/ai-environment/#build-new-containers-based-on-the-images).
 
