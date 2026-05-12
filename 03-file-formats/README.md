@@ -57,6 +57,20 @@ Similar to HDF5, we require a custom built `dataset` for the LMDB file format in
 ## Performance
 The following benchmarks compare loading performance across the different file formats using PyTorch DataLoader on both small and large ImageNet datasets.
 
+### Setup the Benchmarks
+
+1. Download the date with `get_data.sh`. This step requires quite some time and disk space.
+2. Create a venv for `lmdb` with `setup_venv.sh` as there are some packages missing in the container.
+3. Replace the account `project_xxxxxxxxx` in `convert.sh` with your project id.
+4. Convert the data to `squashfs`, `lmdb`, and `hdf5` using `make convert`. This will launch three batch jobs.
+5. Validate that the data has been converted.
+    
+    a. There should be two `squashfs` files (one for training and one for validation) listed when executing `ls -lsh data-formats/squashfs/`.
+
+    b. There should be two `lmdb` files (one for training and one for validation) listed when executing `ls -lsh data-formats/lmdb/`.
+
+    c. There should be two `hdf5` files (one for training and one for validation) listed when executing `ls -lsh data-formats/hdf5/`.
+
 ### Synthetic Benchmark
 In the synthetic benchmark, we measure how quickly samples can be loaded into Python using the PyTorch `DataLoader` for the various different file formats. The loop time is measured for both the tiny and large ImageNet a number of times. Here we report the measured average and standard deviation. 
 For the tiny imagenet, we loop through the entire dataset of 100.000 images. This is tested `N` times, where each job is executed independently to ensure a fresh node is used each time. The result is as follows;
