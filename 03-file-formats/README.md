@@ -60,7 +60,7 @@ The following benchmarks compare loading performance across the different file f
 ### Setup the Benchmarks
 
 1. Download the date with `get_data.sh`. This step requires quite some time and disk space.
-2. Create a venv for `lmdb` with `setup_venv.sh` as there are some packages missing in the container.
+2. Create a venv for `lmdb` with `install_venv.sh` as there are some packages missing in the container.
 3. Replace the account `project_xxxxxxxxx` in `convert.sh` with your project id.
 4. Convert the data to `squashfs`, `lmdb`, and `hdf5` using `make convert`. This will launch three batch jobs.
 5. Validate that the data has been converted.

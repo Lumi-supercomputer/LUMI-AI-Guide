@@ -1,5 +1,5 @@
 build:
-	./setup_venv.sh && ./get_data.sh
+	./install_venv.sh && ./get_data.sh
 
 convert:
 	sbatch convert.sh "squashfs" && sbatch convert.sh "lmdb" && sbatch convert.sh "hdf5"
