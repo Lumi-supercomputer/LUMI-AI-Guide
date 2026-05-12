@@ -2,7 +2,6 @@ import sys, argparse
 from time import time
 
 sys.path.append("scripts/lmdb")
-from lmdb_dataset import LMDBDataset
 
 sys.path.append("scripts/hdf5")
 from hdf5_dataset import HDF5Dataset
@@ -82,7 +81,8 @@ if __name__ == "__main__":
             sqsh_data, "SquashFS", num_workers=num_workers, N_sample=N_sample
         )
     elif args.file_format == "lmdb":
-        lmdb = "data-formats/lmdb-test/data.mdb"
+        from lmdb_dataset import LMDBDataset # do this only here to not crash with other options
+        lmdb = "data-formats/lmdb/train_images"
         t3 = time()
         with LMDBDataset(lmdb, transform=transform) as lmdb_data:
             print(f"LMDB loading time: {time()-t3}")
