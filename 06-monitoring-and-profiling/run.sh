@@ -25,5 +25,4 @@ mkdir -p "$TORCH_HOME"
 # choose container
 SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
 
-export SINGULARITYENV_PREPEND_PATH=/user-software/bin # gives access to packages inside the container
 singularity run $SIF bash -c 'python visiontransformer_profiled.py'
