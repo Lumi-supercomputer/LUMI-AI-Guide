@@ -1,4 +1,4 @@
-import sys, argparse
+import argparse
 from glob import glob
 import numpy as np
 

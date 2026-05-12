@@ -5,11 +5,9 @@ sys.path.append("scripts/lmdb")
 from lmdb_dataset import LMDBDataset
 
 sys.path.append("scripts/hdf5")
-from hdf5_dataset import HDF5Dataset
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 from torchvision.datasets import ImageFolder
-import numpy as np
 
 # Define transformations
 transform = transforms.Compose(
