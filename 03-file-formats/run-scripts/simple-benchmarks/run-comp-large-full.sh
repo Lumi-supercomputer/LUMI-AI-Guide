@@ -24,9 +24,9 @@ export MPICH_MEMORY_REPORT=1
 if [[ $1 == 'squashfs' ]]; then
     SQUASH=/scratch/project_462000002/joachimsode/file-format-ai-benchmark/imagenet-object-localization-challenge.squashfs
     IMAGES=/Data/CLS-LOC/train/
-    srun singularity exec -B $SQUASH:/train_images:image-src=$IMAGES $CONTAINER bash -c 'python run-scripts/simple-benchmarks/compare-dataset-large.py -n 7 -ff "squashfs" -N 2000000'
+    srun singularity exec -B $SQUASH:/train_images:image-src=$IMAGES $SIF bash -c 'python run-scripts/simple-benchmarks/compare-dataset-large.py -n 7 -ff "squashfs" -N 2000000'
 elif [[ $1 == 'lmdb' ]]; then
-    srun singularity exec  $CONTAINER bash -c 'python run-scripts/simple-benchmarks/compare-dataset-large.py -n 7 -ff "lmdb" -N 2000000'
+    srun singularity exec $SIF bash -c 'python run-scripts/simple-benchmarks/compare-dataset-large.py -n 7 -ff "lmdb" -N 2000000'
 elif [[ $1 == 'hdf5' ]]; then
     echo "Error: HDF5 is incompatible with large imagenet dataset."
 fi
