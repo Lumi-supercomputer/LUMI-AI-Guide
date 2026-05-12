@@ -6,7 +6,6 @@ from torch.utils.data import DataLoader, random_split
 from torch.nn.parallel import DistributedDataParallel
 import torch.distributed as dist
 from torch.utils.data.distributed import DistributedSampler
-import psutil
 import mlflow
 import sys
 
