@@ -9,7 +9,6 @@ from hdf5_dataset import HDF5Dataset
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 from torchvision.datasets import ImageFolder
-import numpy as np
 
 # Define transformations
 transform = transforms.Compose(
@@ -83,7 +82,7 @@ if __name__ == "__main__":
             sqsh_data, "SquashFS", num_workers=num_workers, N_sample=N_sample
         )
     elif args.file_format == "lmdb":
-        lmdb = "/project/project_462000002/joachimsode/file-format-ai-benchmark/LUMI-AI-example/data-formats/lmdb-test/data.mdb"
+        lmdb = "data-formats/lmdb-test/data.mdb"
         t3 = time()
         with LMDBDataset(lmdb, transform=transform) as lmdb_data:
             print(f"LMDB loading time: {time()-t3}")
@@ -92,7 +91,7 @@ if __name__ == "__main__":
                 lmdb_data, "LMDB", num_workers=num_workers, N_sample=N_sample
             )
     elif args.file_format == "hdf5":
-        hdf5 = "/project/project_462000002/joachimsode/file-format-ai-benchmark/LUMI-AI-example/data-formats/hdf5/train_images.hdf5"
+        hdf5 = "data-formats/hdf5/train_images.hdf5"
         t3 = time()
         with HDF5Dataset(hdf5, transform=transform) as hdf5_data:
             print(f"HDF5 loading time: {time()-t3}")
