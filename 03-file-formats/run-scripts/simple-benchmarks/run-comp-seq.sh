@@ -23,10 +23,11 @@ export MPICH_MEMORY_REPORT=1
 if [[ $1 == 'squashfs' ]]; then
     SQUASH=data-formats/squashfs/train.squashfs
     IMAGES=/
-    srun singularity exec -B $SQUASH:/train_images:image-src=$IMAGES $SIF bash -c 'python run-scripts/simple-benchmarks/compare-dataset-tiny.py -n 1 -ff "squashfs" -N 100000'
+    srun singularity run -B $SQUASH:/train_images:image-src=$IMAGES $SIF bash -c 'python run-scripts/simple-benchmarks/compare-dataset-tiny.py -n 1 -ff "squashfs" -N 100000'
 elif [[ $1 == 'lmdb' ]]; then
-    srun singularity exec $SIF bash -c 'python run-scripts/simple-benchmarks/compare-dataset-tiny.py -n 1 -ff "lmdb" -N 100000'
+    export SINGULARITYENV_PREPEND_PATH=/user-software/bin # gives access to packages inside the container
+    srun singularity run -B venv.sqsh:/user-software:image-src=/ $SIF bash -c 'python run-scripts/simple-benchmarks/compare-dataset-tiny.py -n 1 -ff "lmdb" -N 100000'
 elif [[ $1 == 'hdf5' ]]; then
-    srun singularity exec $SIF bash -c 'python run-scripts/simple-benchmarks/compare-dataset-tiny.py -n 1 -ff "hdf5" -N 100000'
+    srun singularity run $SIF bash -c 'python run-scripts/simple-benchmarks/compare-dataset-tiny.py -n 1 -ff "hdf5" -N 100000'
 fi
 
