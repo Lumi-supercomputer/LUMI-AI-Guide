@@ -4,7 +4,7 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=16
 #SBATCH --mem-per-cpu=1750
-#SBATCH --time=0:20:00
+#SBATCH --time=0:30:00
 
 # this module facilitates the use of singularity containers on LUMI
 module purge
