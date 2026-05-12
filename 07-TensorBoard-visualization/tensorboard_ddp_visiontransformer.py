@@ -28,27 +28,6 @@ def matplotlib_imshow(img, one_channel=False):
     else:
         plt.imshow(np.transpose(npimg, (1, 2, 0)))
 
-
-def set_cpu_affinity(local_rank):
-    LUMI_GPU_CPU_map = {
-        # A mapping from GCD to the closest CPU cores in a LUMI-G node
-        # Note that CPU cores 0, 8, 16, 24, 32, 40, 48, 56 are reserved for the
-        # system and not available for the user
-        # See https://docs.lumi-supercomputer.eu/hardware/lumig/
-        0: [49, 50, 51, 52, 53, 54, 55],
-        1: [57, 58, 59, 60, 61, 62, 63],
-        2: [17, 18, 19, 20, 21, 22, 23],
-        3: [25, 26, 27, 28, 29, 30, 31],
-        4: [1, 2, 3, 4, 5, 6, 7],
-        5: [9, 10, 11, 12, 13, 14, 15],
-        6: [33, 34, 35, 36, 37, 38, 39],
-        7: [41, 42, 43, 44, 45, 46, 47],
-    }
-    cpu_list = LUMI_GPU_CPU_map[local_rank]
-    print(f"Rank {rank} (local {local_rank}) binding to cpus: {cpu_list}")
-    psutil.Process().cpu_affinity(cpu_list)
-
-
 def train_model(model, criterion, optimizer, train_loader, val_loader, epochs, rank):
     # note that "cuda" is used as a general reference to GPUs,
     # even when running on AMD GPUs that use ROCm
@@ -113,7 +92,6 @@ if __name__ == "__main__":
     local_rank = int(os.environ["LOCAL_RANK"])
     torch.cuda.set_device(local_rank)
     rank = int(os.environ["RANK"])
-    set_cpu_affinity(local_rank)
 
     # Define transformations
     transform = transforms.Compose(
