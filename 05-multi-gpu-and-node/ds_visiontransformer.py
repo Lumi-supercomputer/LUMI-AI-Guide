@@ -3,7 +3,6 @@ import os
 import time
 import argparse
 import deepspeed
-import psutil
 import torchvision.transforms as transforms
 from torchvision.models import vit_b_16
 from torch.utils.data import DataLoader, random_split
