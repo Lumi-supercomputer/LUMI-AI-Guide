@@ -1,12 +1,6 @@
-import os, sys
-import time
-from PIL import Image
 import h5py
-import numpy as np
 from torchvision.datasets import ImageFolder
 import torchvision.transforms as transforms
-from pathlib import Path
-
 
 def create_hdf5(image_folder, output_file):
     dataset = ImageFolder(image_folder, transform=transforms.ToTensor())

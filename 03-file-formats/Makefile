@@ -1,11 +1,8 @@
 build:
-	./install_venv.sh && ./get_data.sh
+	./get_data.sh
 
 convert:
 	sbatch convert.sh "squashfs" && sbatch convert.sh "lmdb" && sbatch convert.sh "hdf5"
-
-clean:
-	rm -rf venv-extension data-formats
 
 bench-seq:
 	sbatch run-scripts/simple-benchmarks/run-comp-seq.sh "squashfs" && sbatch run-scripts/simple-benchmarks/run-comp-seq.sh "lmdb" && sbatch run-scripts/simple-benchmarks/run-comp-seq.sh "hdf5"
