@@ -1,6 +1,7 @@
 import torch
 from torch.utils.data import Dataset
 import lmdb
+import io
 import pickle
 import os
 from PIL import Image
@@ -37,7 +38,7 @@ class LMDBDataset(Dataset):
             byteflow = txn.get(self.keys[idx])
         byte_image, label = pickle.loads(byteflow)
 
-        image = Image.open(byte_image).convert("RGB")
+        image = Image.open(io.BytesIO(byte_image)).convert("RGB")
         label = torch.tensor(label, dtype=torch.long)
 
         if self.transform:
