@@ -276,7 +276,7 @@ To run on multiple nodes, we only need to adjust the job requirements:
 For optimal performance on a LUMI-G node, it is important to set the correct bindings between CPU cores and GCDs (see also https://docs.lumi-supercomputer.eu/runjobs/scheduled-jobs/distribution-binding/#gpu-binding). We illustrate how this can be achieved for two scenarios: when using the torchrun launcher, as well as `srun`. We use the PyTorch DDP example, but the steps are the same for the DeepSpeed example.
 
 #### torchrun
-When torchrun is used, we can rely on (NUMA binding)[https://docs.pytorch.org/docs/2.11/elastic/numa.html#module-torch.numa] with `--numa-binding=exclusive` to set this automatically for us. This might transfer to other systems than LUMI-G as well.
+When torchrun is used, we can rely on [NUMA binding](https://docs.pytorch.org/docs/2.11/elastic/numa.html#module-torch.numa) with `--numa-binding=exclusive` to set this automatically for us. This might transfer to other systems than LUMI-G as well.
 
 ```bash
 srun singularity run $SIF bash -c 'python -m torch.distributed.run --numa-binding=exclusive --standalone --nnodes=1 --nproc_per_node=8 ddp_visiontransformer.py'
