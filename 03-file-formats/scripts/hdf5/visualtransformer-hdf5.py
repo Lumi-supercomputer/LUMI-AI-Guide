@@ -2,7 +2,7 @@ from torch.utils.data import DataLoader, random_split
 from hdf5_dataset import HDF5Dataset
 import torch
 import torchvision.transforms as transforms
-from torch.profiler import profile, record_function, ProfilerActivity
+from torch.profiler import profile, ProfilerActivity
 from torchvision.models import vit_b_16
 import sys
 

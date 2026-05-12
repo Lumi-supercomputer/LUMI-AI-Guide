@@ -1,6 +1,6 @@
 import torch
 import torchvision.transforms as transforms
-from torch.profiler import profile, record_function, ProfilerActivity, schedule
+from torch.profiler import profile, ProfilerActivity, schedule
 from torchvision.models import vit_b_16
 from torch.utils.data import DataLoader, random_split
 import sys

@@ -1,21 +1,12 @@
 import os
 import sys
-import six
-import string
 import argparse
 
 import lmdb
 import pickle
-import msgpack
-import tqdm
-from PIL import Image
 
-import torch
 import torch.utils.data as data
 from torch.utils.data import DataLoader
-from torchvision.transforms import transforms
-from torchvision.datasets import ImageFolder
-from torchvision import transforms, datasets
 
 sys.path.append("scripts/")
 from generics import time

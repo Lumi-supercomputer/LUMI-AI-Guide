@@ -1,9 +1,8 @@
 import torch
-from torch.utils.data import Dataset, DataLoader
-from torchvision.transforms.functional import to_pil_image
+from torch.utils.data import Dataset
 import lmdb
 import pickle
-import os, six
+import os
 from PIL import Image
 
 
