@@ -17,13 +17,13 @@ bench-full:
 	sbatch run-scripts/simple-benchmarks/run-comp-large-full.sh "squashfs" && sbatch run-scripts/simple-benchmarks/run-comp-large-full.sh "lmdb"
 
 post-seq:
-	python run-scripts/simple-benchmarks/post-process.py -d 'seq'
+	python3 run-scripts/simple-benchmarks/post-process.py -d 'seq'
 
 post-par:
-	python run-scripts/simple-benchmarks/post-process.py -d 'tiny'
+	python3 run-scripts/simple-benchmarks/post-process.py -d 'tiny'
 
 post-large:
-	python run-scripts/simple-benchmarks/post-process.py -d 'large'
+	python3 run-scripts/simple-benchmarks/post-process.py -d 'large'
 
 post-large-full:
-	python run-scripts/simple-benchmarks/post-process.py -d 'large-full'
+	python3 run-scripts/simple-benchmarks/post-process.py -d 'large-full'
