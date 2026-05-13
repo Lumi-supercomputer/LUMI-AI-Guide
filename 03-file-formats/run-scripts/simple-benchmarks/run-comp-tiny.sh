@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=comp-tiny
 #SBATCH --output=./run-scripts/simple-benchmarks/comp-tiny-%j.out
-#SBATCH --account=project_462000131
+#SBATCH --account=project_xxxxxxxxx
 #SBATCH --partition=standard-g
 #SBATCH --nodes=1
 #SBATCH --gpus-per-node=1

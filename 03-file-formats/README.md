@@ -70,6 +70,19 @@ The following benchmarks compare loading performance across the different file f
     b. There should be two `lmdb` files (one for training and one for validation) listed when executing `ls -lsh data-formats/lmdb/`.
 
     c. There should be two `hdf5` files (one for training and one for validation) listed when executing `ls -lsh data-formats/hdf5/`.
+6. Replace the account `project_xxxxxxxxx` in `run-scripts/simple-benchmarks/run-comp-seq.sh` and `run-scripts/simple-benchmarks/run-comp-tiny.sh`  with your project id.
+
+7. Run the benchmarks. Each command will launch three jobs with one of them for each file format. You should run each command multiple times to get a better estimate.
+
+    a. For the parallel benchmark: `make bench-par`
+
+    b. For the sequential benchmark: `make bench-seq`
+
+8. Post process the benchmarks one the jobs above are done. It will print you a table showing the average time, std, and number of runs for each file format.
+
+    a. For the parallel benchmark: `make post-par`
+
+    b. For the sequential benchmark: `make post-seq`
 
 ### Synthetic Benchmark
 In the synthetic benchmark, we measure how quickly samples can be loaded into Python using the PyTorch `DataLoader` for the various different file formats. The loop time is measured for both the tiny and large ImageNet a number of times. Here we report the measured average and standard deviation. 
@@ -92,6 +105,8 @@ We can repeat the benchmark in a sequential job with one CPU core and `num_worke
 | squashfs |  247.25  |  1.53   |  5  |
 |   HDF5   |  1884.7  |  0.46   |  5  |
 |   LMDB   |  209.95  |  15.99  |  5  |
+
+#### Large ImageNet
 
 For the large imagenet, we loop through 200.000 out of the 1.2 million images for the formats compatible with varying image size. The varying image sizes pose a critical problem for the HDF5 format, since it requires the data to fit into `ndarray`-like (d-dimensional hypercube) data structures. While data padding is possible, this is not pursued here to keep the comparison fair. The job is again executed independently `N` times and identical `DataLoader` parameters are used.
 
