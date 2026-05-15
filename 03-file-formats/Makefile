@@ -27,3 +27,6 @@ post-large:
 
 post-large-full:
 	python3 run-scripts/simple-benchmarks/post-process.py -d 'large-full'
+
+bench-vit:
+	sbatch run-scripts/training-benchmarks/run-comp-vision-transformer.sh "squashfs" && sbatch run-scripts/training-benchmarks/run-comp-vision-transformer.sh "lmdb" && sbatch run-scripts/training-benchmarks/run-comp-vision-transformer.sh "hdf5"
