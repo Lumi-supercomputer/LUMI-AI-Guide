@@ -2,12 +2,12 @@
 #SBATCH --job-name=comp-vit
 #SBATCH --output=./run-scripts/training-benchmarks/comp-vision-transformer-%j.out
 #SBATCH --account=project_xxxxxxxxx
-#SBATCH --partition=dev-g
+#SBATCH --partition=standard-g
 #SBATCH --nodes=1
 #SBATCH --gpus-per-node=1
 #SBATCH --cpus-per-task=7
 #SBATCH --mem-per-gpu=60G
-#SBATCH --time=00:15:00
+#SBATCH --time=01:00:00
 
 # this module facilitates the use of singularity containers on LUMI
 module purge
