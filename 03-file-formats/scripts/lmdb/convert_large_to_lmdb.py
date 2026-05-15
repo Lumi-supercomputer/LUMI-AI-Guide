@@ -9,8 +9,7 @@ import torch.utils.data as data
 from torch.utils.data import DataLoader
 
 sys.path.append("scripts/")
-from generics import time
-from generics import ZipFolder
+from zip_folder import ZipFolder
 
 # Code adopted from https://github.com/rmccorm4/PyTorch-LMDB which is adopted from https://github.com/Lyken17/Efficient-PyTorch
 
