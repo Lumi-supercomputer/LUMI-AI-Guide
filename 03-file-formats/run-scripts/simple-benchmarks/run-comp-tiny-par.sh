@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=comp-tiny
+#SBATCH --job-name=comp-tiny-par
 #SBATCH --output=./run-scripts/simple-benchmarks/comp-tiny-par-%j.out
 #SBATCH --account=project_xxxxxxxxx
 #SBATCH --partition=standard-g

@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=comp-seq
+#SBATCH --job-name=comp-tiny-seq
 #SBATCH --output=./run-scripts/simple-benchmarks/comp-tiny-seq-%j.out
 #SBATCH --account=project_xxxxxxxxx
 #SBATCH --partition=standard-g
@@ -7,7 +7,7 @@
 #SBATCH --gpus-per-node=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem-per-gpu=60G
-#SBATCH --time=00:20:00
+#SBATCH --time=00:40:00
 
 # this module facilitates the use of singularity containers on LUMI
 module purge
@@ -16,9 +16,6 @@ module load lumi-aif-singularity-bindings
 
 # choose container
 SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
-
-export MPICH_MPIIO_STATS=1
-export MPICH_MEMORY_REPORT=1
 
 if [[ $1 == 'squashfs' ]]; then
     SQUASH=data-formats/squashfs/train.squashfs
