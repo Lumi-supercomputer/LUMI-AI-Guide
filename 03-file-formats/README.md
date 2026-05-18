@@ -63,7 +63,7 @@ Similar to HDF5, we require a custom built `dataset` for the LMDB file format in
 ## Performance
 The following benchmarks compare loading performance across the different file formats using PyTorch DataLoader on both small and large ImageNet datasets.
 
-### Synthetic Benchmark (Tiny-ImageNet)
+### Synthetic Benchmark (Tiny ImageNet)
 In the synthetic benchmark, we measure how quickly samples can be loaded into Python using the PyTorch `DataLoader` for the various different file formats. The loop time is measured for both the tiny and large ImageNet a number of times. Here we report the measured average and standard deviation. 
 For the tiny ImageNet, we loop through the entire dataset of 100.000 images. This is tested `N` times, where each job is executed independently to ensure a fresh node is used each time. The result is as follows;
 
@@ -107,7 +107,7 @@ We can repeat the benchmark in a sequential job with one CPU core and `num_worke
 
     b. For the sequential benchmark: `make bench-seq`
 
-8. Post process the benchmarks one the jobs above are done. It will print you a table showing the average time, std, and number of runs for each file format.
+8. Post process the benchmarks once the jobs above are done. It will print you a table showing the average time, std, and number of runs for each file format.
 
     a. For the parallel benchmark: `make post-par`
 
@@ -127,6 +127,15 @@ LMDB shows roughly 28% better performance than squashfs.
 > [!NOTE]  
 > The scripts for the ImageNet-1k benchmark can be found in an old version of the repository [here](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/tree/a3ae45cc82ede40fd5e509567d69bcf7bad0a60f/03-file-formats).
 > We are working on updating them.
+
+
+### Training Benchmark (Tiny ImageNet)
+
+The file [run-scripts/training-benchmarks/compare-dataset-training.py](./run-scripts/training-benchmarks/compare-dataset-training.py) implements a comparison between the three formats when training a vision transformer as in chapter 01. You can run the comparison by preparing the data of Tiny ImageNet as with the synthetic benchmark and then executing the following two steps:
+
+- Run the benchmarks with `make bench-vit`. It will launch three jobs with one of them for each file format. You should run each command multiple times to get a better estimate.
+
+- Post process the benchmarks with `make post-vit` once the jobs above are done. It will print you a table showing the average time, std, and number of runs for each file format.
 
 ### Table of contents
 
