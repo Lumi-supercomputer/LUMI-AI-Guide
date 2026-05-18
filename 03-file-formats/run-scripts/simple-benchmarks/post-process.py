@@ -10,7 +10,7 @@ def main():
     parser.add_argument(
         "-d",
         "--data",
-        choices=["seq", "tiny", "large", "full"],
+        choices=["tiny-seq", "tiny-par", "large", "full"],
         help="Slurm output file-string",
     )
 
