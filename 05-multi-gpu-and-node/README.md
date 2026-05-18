@@ -60,7 +60,7 @@ The jobscript to run the PyTorch DDP example on a single LUMI-G node with all 4 
 We use the `torchrun` launcher, which will launch 8 processes on the node:
 
 ```bash
-srun singularity run -B ../resources/ai-guide-env.sqsh:/user-software:image-src=/ $SIF bash -c 'python -m torch.distributed.run --standalone --nnodes=1 --nproc_per_node=8 ddp_visiontransformer.py'
+srun singularity run $SIF bash -c 'python -m torch.distributed.run --standalone --nnodes=1 --nproc_per_node=8 ddp_visiontransformer.py'
 ```
 
 ##### Multi-node
@@ -80,7 +80,7 @@ export MASTER_PORT="1${SLURM_JOB_ID:0-4}" # set port based on SLURM_JOB_ID to av
 
 And run with `torchrun`, passing the `--rdzv_*` parameters to the launcher:
 ```bash
-srun singularity run -B ../resources/ai-guide-env.sqsh:/user-software:image-src=/ $SIF bash -c 'python -m torch.distributed.run --nnodes=$SLURM_JOB_NUM_NODES --nproc_per_node=8 --rdzv_id=\$SLURM_JOB_ID --rdzv_backend=c10d --rdzv_endpoint="$MASTER_ADDR:$MASTER_PORT" ddp_visiontransformer.py'
+srun singularity run $SIF bash -c 'python -m torch.distributed.run --nnodes=$SLURM_JOB_NUM_NODES --nproc_per_node=8 --rdzv_id=\$SLURM_JOB_ID --rdzv_backend=c10d --rdzv_endpoint="$MASTER_ADDR:$MASTER_PORT" ddp_visiontransformer.py'
 ```
 
 #### srun
@@ -218,7 +218,7 @@ export MASTER_PORT="1${SLURM_JOB_ID:0-4}" # set port based on SLURM_JOB_ID to av
 
 We use the `torchrun` launcher, which will launch 8 processes on the node:
 ```bash
-srun singularity run -B ../resources/ai-guide-env.sqsh:/user-software:image-src=/ $SIF bash -c 'export CXX=g++-12; python -m torch.distributed.run --nproc_per_node 8 --nnodes $SLURM_NNODES --node_rank $SLURM_PROCID --master_addr $MASTER_ADDR --master_port $MASTER_PORT ds_visiontransformer.py --deepspeed --deepspeed_config ds_config.json'
+srun singularity run $SIF bash -c 'python -m torch.distributed.run --nproc_per_node 8 --nnodes $SLURM_NNODES --node_rank $SLURM_PROCID --master_addr $MASTER_ADDR --master_port $MASTER_PORT ds_visiontransformer.py --deepspeed --deepspeed_config ds_config.json'
 ```
 
 ##### Multi-node
@@ -232,7 +232,7 @@ To run on multiple nodes, we adjust the job requirements:
 
 And pass the `--rdzv_*` parameters to the launcher:
 ```bash
-srun singularity run -B ../resources/ai-guide-env.sqsh:/user-software:image-src=/ $SIF bash -c 'export CXX=g++-12; python -m torch.distributed.run --nnodes=$SLURM_JOB_NUM_NODES --nproc_per_node=8 --node_rank $SLURM_PROCID --rdzv_id=\$SLURM_JOB_ID --rdzv_backend=c10d --rdzv_endpoint="$MASTER_ADDR:$MASTER_PORT" ds_visiontransformer.py --deepspeed --deepspeed_config ds_config.json'
+srun singularity run $SIF bash -c 'python -m torch.distributed.run --nnodes=$SLURM_JOB_NUM_NODES --nproc_per_node=8 --node_rank $SLURM_PROCID --rdzv_id=\$SLURM_JOB_ID --rdzv_backend=c10d --rdzv_endpoint="$MASTER_ADDR:$MASTER_PORT" ds_visiontransformer.py --deepspeed --deepspeed_config ds_config.json'
 ```
 
 
@@ -259,7 +259,7 @@ export WORLD_SIZE=$SLURM_NPROCS
 
 Then we run as follows:
 ```bash
-srun --cpu-bind=v,mask_cpu=$CPU_BIND_MASKS singularity run -B ../resources/ai-guide-env.sqsh:/user-software:image-src=/ $SIF bash -c 'export CXX=g++-12; export RANK=$SLURM_PROCID; export LOCAL_RANK=$SLURM_LOCALID; python ds_visiontransformer.py --deepspeed --deepspeed_config ds_config.json'
+srun --cpu-bind=v,mask_cpu=$CPU_BIND_MASKS singularity run  $SIF bash -c 'export RANK=$SLURM_PROCID; export LOCAL_RANK=$SLURM_LOCALID; python ds_visiontransformer.py --deepspeed --deepspeed_config ds_config.json'
 ```
 Note that the `RANK` and `LOCAL_RANK` environment variables are exported inside the container and cannot be exported in the Slurm script, as they are only available inside the Slurm jobstep (after srun has launched the process).
 
@@ -276,37 +276,12 @@ To run on multiple nodes, we only need to adjust the job requirements:
 For optimal performance on a LUMI-G node, it is important to set the correct bindings between CPU cores and GCDs (see also https://docs.lumi-supercomputer.eu/runjobs/scheduled-jobs/distribution-binding/#gpu-binding). We illustrate how this can be achieved for two scenarios: when using the torchrun launcher, as well as `srun`. We use the PyTorch DDP example, but the steps are the same for the DeepSpeed example.
 
 #### torchrun
-When torchrun is used, there is no way to pass binding information to the launcher, so the GPU binding has to be set in the python script itself, as follows:
+When torchrun is used, we can rely on [NUMA binding](https://docs.pytorch.org/docs/2.11/elastic/numa.html#module-torch.numa) with `--numa-binding=exclusive` to set this automatically for us. This might transfer to other systems than LUMI-G as well.
 
-```python
-def set_cpu_affinity(local_rank):
-    LUMI_GPU_CPU_map = {
-        # A mapping from GCD to the closest CPU cores in a LUMI-G node
-        # Note that CPU cores 0, 8, 16, 24, 32, 40, 48, 56 are reserved for the
-        # system and not available for the user
-        # See https://docs.lumi-supercomputer.eu/hardware/lumig/
-        0: [49, 50, 51, 52, 53, 54, 55],
-        1: [57, 58, 59, 60, 61, 62, 63],
-        2: [17, 18, 19, 20, 21, 22, 23],
-        3: [25, 26, 27, 28, 29, 30, 31],
-        4: [1, 2, 3, 4, 5, 6, 7],
-        5: [9, 10, 11, 12, 13, 14, 15],
-        6: [33, 34, 35, 36, 37, 38, 39],
-        7: [41, 42, 43, 44, 45, 46, 47],
-    }
-    cpu_list = LUMI_GPU_CPU_map[local_rank]
-    print(f"Rank {rank} (local {local_rank}) binding to cpus: {cpu_list}")
-    psutil.Process().cpu_affinity(cpu_list)
-
-dist.init_process_group(backend='nccl')
-
-local_rank = int(os.environ['LOCAL_RANK'])
-torch.cuda.set_device(local_rank)
-rank = int(os.environ["RANK"])
-set_cpu_affinity(local_rank)
+```bash
+srun singularity run $SIF bash -c 'python -m torch.distributed.run --numa-binding=exclusive --standalone --nnodes=1 --nproc_per_node=8 ddp_visiontransformer.py'
 ```
 
-Note that this binding is specific to LUMI-G nodes and may not be optimal (or work) on other systems. Moreover, since the binding is implemented in the training script itself, this is not a portable solution. Using `srun` to launch the training job provides a more portable solution to GPU binding.
 
 #### `srun`
 When `srun` is used, Slurm binding options can be used in the job script:
@@ -314,7 +289,7 @@ When `srun` is used, Slurm binding options can be used in the job script:
 ```bash
 CPU_BIND_MASKS="0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000000fe000000,0x00000000000000fe,0x000000000000fe00,0x000000fe00000000,0x0000fe0000000000"
 
-srun --cpu-bind=v,mask_cpu=$CPU_BIND_MASKS singularity run -B ../resources/ai-guide-env.sqsh:/user-software:image-src=/ $SIF bash -c "export RANK=\$SLURM_PROCID && export LOCAL_RANK=\$SLURM_LOCALID && python ddp_visiontransformer.py"
+srun --cpu-bind=v,mask_cpu=$CPU_BIND_MASKS singularity run $SIF bash -c "export RANK=\$SLURM_PROCID && export LOCAL_RANK=\$SLURM_LOCALID && python ddp_visiontransformer.py"
 ```
 
 To output the binding information, `--cpu-bind=v` can be passed to `srun`:
