@@ -124,6 +124,10 @@ For the ImageNet-1k, we loop through 200.000 out of the 1.2 million images for t
 
 LMDB shows roughly 28% better performance than squashfs. 
 
+> [!NOTE]  
+> The scripts for the ImageNet-1k benchmark can be found in an old version of the repository [here](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/tree/a3ae45cc82ede40fd5e509567d69bcf7bad0a60f/03-file-formats).
+> We are working on updating them.
+
 ### Table of contents
 
 - [Home](..#readme)
