@@ -69,10 +69,13 @@ We can check whether the selected PyTorch image detects the allocated GPU with t
 The command
 
 ```
+# this module facilitates the use of singularity containers on LUMI
 module purge
 module use /appl/local/laifs/modules
 module load lumi-aif-singularity-bindings
+# export path to used container image
 export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
+# run job on LUMI that prints out the number of reserved GPUs
 srun -A <your-project-id> -p small-g -n 1 --gpus-per-task=1 singularity run $SIF python -c "import torch; print(torch.cuda.device_count())"
 ```
 
@@ -95,25 +98,30 @@ If you prefer to set the bindings manually, we recommend taking a look at the [R
 You might find yourself in a situation where none of the provided containers contain all Python packages you need. One possible way of adding custom packages not included in the image is to use a virtual environment on top of the conda environment. For this example, we need to add the hyperparameter optimization Python package `optuna` to the environment:
 
 ```
+# this module facilitates the use of singularity containers on LUMI
 module purge
 module use /appl/local/laifs/modules
 module load lumi-aif-singularity-bindings
+# export path to used container image
 export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
+# open shell in the container
 singularity shell $SIF
+# create a venv in the container with access to the packages from the container
 Singularity> python -m venv optuna-env --system-site-packages
+# activate the venv and install the optuna package
 Singularity> source optuna-env/bin/activate
-(h5-env) Singularity> pip install optuna
+(optuna-env) Singularity> pip install optuna
 ```
 
-You can execute `sh create_venv.sh`. This will create an `optuna-env` environment in the working directory. The `--system-site-packages` flag gives the virtual environment access to the packages from the container.
+Instead of doing this whole process manually, you can execute `sh create_venv.sh`. This will create an `optuna-env` environment in the working directory. The `--system-site-packages` flag gives the virtual environment access to the packages from the container.
 
 You can execute `sbatch run_venv.sh` to check if the installation was successful. The output file should print out versions of `optuna` and `PyTorch`. It should also say `torch.cuda.is_available() True` to ensure that the PyTorch installation still supports GPUs.
 
-The script `run_venv.sh` has the below extra lines to execute a script called `test_new_packages.py` within the container using the virtual environment:
+The script `run_venv.sh` has the below extra lines to execute a script called `test_packages.py` within the container using the virtual environment:
 
 ```
 export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
-singularity run $SIF bash -c 'source optuna-env/bin/activate && python test_new_packages.py'
+singularity run $SIF bash -c 'source optuna-env/bin/activate && python test_packages.py'
 ```
 
 This approach allows extending the environment without rebuilding the container from scratch every time a new package is added. 
@@ -121,7 +129,8 @@ This approach allows extending the environment without rebuilding the container 
 ### Adjustments for filesystem performance.
 Installing Python packages typically creates thousands of small files. This puts a lot of strain on the Lustre file system and might exceed your file quota. This problem can be solved by turning the virtual environment directory into a SquashFS file as follows.
 
-To create a squashfs file for our example you can execute `sh create_squashfs.sh` which uses the below lines to create a squashfs files of the venv and deletes the venv. The `-processors 1` and `-no-xattrs` are recommended arguments on LUMI.
+To create a squashfs file for our example you can execute `sh create_squashfs.sh` which uses the below lines to create a squashfs files of the venv and deletes the venv.
+The `-processors 1` (use one CPU thread which is benefical on LUMI login nodes) and `-no-xattrs` (disables extended attributes as they cause warnings on LUMI) are recommended arguments on LUMI.
 
 ```
 mksquashfs optuna-env optuna-env.sqsh -processors 1 -no-xattrs
@@ -134,7 +143,7 @@ It uses the below lines to enable the use of the packages in the squashfs contai
 ```
 export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
 export SINGULARITYENV_PREPEND_PATH=/user-software/bin # gives access to packages inside the container
-singularity run -B optuna-env.sqsh:/user-software:image-src=/ $SIF python test_new_packages.py
+singularity run -B optuna-env.sqsh:/user-software:image-src=/ $SIF python test_packages.py
 ```
 
 There are other options to adding new packages to a container:
