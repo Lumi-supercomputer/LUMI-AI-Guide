@@ -1,11 +1,20 @@
 #!/bin/bash
-module use /appl/local/training/modules/AI-20240529
-module load singularity-userfilesystems singularity-CPEbits
+module purge
+export BUILD_DIR=env-temp
+export SQUASHFS_NAME=venv.sqsh
+export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
 
-CONTAINER=/appl/local/containers/sif-images/lumi-pytorch-rocm-6.2.1-python-3.12-pytorch-20240918-vllm-4075b35.sif
+# creating the venv
+echo "Creating venv in: $BUILD_DIR"
+mkdir $BUILD_DIR
+singularity exec -B "$BUILD_DIR":/user-software "$SIF" bash -c '
+set -euo pipefail
+python -m venv /user-software --system-site-packages
+/user-software/bin/python -m pip install lmdb
+'
 
-if [ -d "venv-extension" ]; then echo 'Removing existing venv-extension'; rm -Rf venv-extension; fi
-
-singularity exec $CONTAINER bash -c '$WITH_CONDA && python -m venv venv-extension --system-site-packages && source venv-extension/bin/activate && python -m pip install -r venv-requirements.txt'
-
-
+# creating the squashfs file and removing the venv
+echo "Creating squashfs in: $SQUASHFS_NAME"
+mksquashfs $BUILD_DIR $SQUASHFS_NAME -processors 1 -no-xattrs
+rm -rf $BUILD_DIR
+echo "done"

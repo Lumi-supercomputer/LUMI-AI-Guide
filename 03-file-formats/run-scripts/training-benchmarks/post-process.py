@@ -1,32 +1,22 @@
-import argparse
 from glob import glob
 import numpy as np
 
-# Raw data files can be summarized with CLI 'grep time *tiny*.out'
-
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-d",
-        "--data",
-        choices=["tiny-seq", "tiny-par"],
-        help="Slurm output file-string",
-    )
-
-    args = parser.parse_args()
-
-    files = glob(f"run-scripts/simple-benchmarks/*{args.data}*.out")
+    files = glob(f"run-scripts/training-benchmarks/comp-vision-transformer*.out")
     raw_result = {"HDF5": [], "LMDB": [], "SquashFS": []}
     for file_name in files:
+        print(file_name)
         with open(file_name, "r") as fd:
             lines = [line.rstrip("\n") for line in fd]
             try:
                 for line in lines:
                     # get the line from the log that has the execution time
-                    if "dataloader time" in line:
-                        file_format, _, _, time = line.split(" ")
-                        raw_result[file_format].append(float(time))
+                    if "time:" in line:
+                        print(line)
+                        file_format, _, time = line.split(" ")
+                        formatted_file_format = file_format.upper().replace("SQUASH", "Squash")
+                        raw_result[formatted_file_format].append(float(time))
             except Exception as e:
                 continue
 

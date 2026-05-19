@@ -1,14 +1,5 @@
 # 03. File formats for training data
 
-> [!NOTE]  
-> The Python and shell scripts in the `file-formats` directory are used for the benchmarks presented in this chapter. Many of them require packages that are not included in the environment that is set up in the [QuickStart](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/tree/main/01-quickstart#readme) chapter. If you wish to install additional packages and run these scripts yourself, have a look at the [Setting up your own environment](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/tree/main/02-setting-up-environment#readme) chapter.
-
-> [!IMPORTANT] 
-> PyTorch containers on LUMI will in the future be provided by the [LUMI AI Factory](lumi-ai-factory.eu). 
-> The part 3 of this guide will soon be updated to utilize these new containers. The containers currently referenced in this guide remain available on LUMI but will no longer receive updates. However, all examples included in this guide will continue to work as they currently do. 
-> For more information about the new containers, refer to the [LUMI AI Factory AI Software Environment documentation](https://docs.lumi-supercomputer.eu/laif/software/ai-environment/).
-
-
 ## Introduction
 
 Generally, there is no one-size-fits-all file format suitable for all machine learning and artificial intelligence data. Different high-performance file formats have different strategies for increasing the read/write throughput, and these strategies might not be compatible with the format of the data (e.g. variable image sizes). As a result, this compatibility must be determined before an optimal file format can be chosen. 
@@ -17,7 +8,7 @@ Another practical issue is the data conversion necessary to change one's data fr
 
 After converting the dataset to the desired file format, it must also be efficiently processed in PyTorch. Different formats have different requirements here as well, where some require writing custom classes, while others are plug-and-play. Custom datasets can be built in PyTorch using the [built-in base classes](https://pytorch.org/vision/stable/datasets.html#base-classes-for-custom-datasets). 
 
-Finally, the actual performance of the various file formats is the final deciding factor. The performance of the different file format has been analyzed with a 5GB tiny imagenet and 157GB full imagenet. For the tiny imagenet we found near identical performance for all file formats.
+Finally, the actual performance of the various file formats is the final deciding factor. The performance of the different file format has been analyzed with a 5GB Tiny ImageNet and 157GB ImageNet-1k.
 
 ## Squashfs
 Squashfs is perhaps the simplest way to get started with a PyTorch AI/ML workflow on a HPC platform. It poses no restrictions in terms of compatibility, and it requires the least amount of custom data parsers and scripts out of the formats tested here. However, it does currently require a local linux system for data conversion. It is also the least performing option on large datasets.
@@ -34,12 +25,18 @@ Running PyTorch with data stored in the `squashfs` file format is particularly s
 ```bash
 singularity run -B inputs.squashfs:/input-data:image-src=/ mycontainer.sif
 ```
-where `inputs.squashfs` is the relative path to the stored `.squashfs` file, `:/input-data` is the folder where the data will appear inside the container file system and finally `:image-src=/` tells singularity it should be mounted as a folder (in contrast to a single file), and the `/` describes the path inside the `.squashfs` file the mount will appear. 
- For example, if the folder `ILSVRC/` has a deep tree structure such as `ILSVRC/Data/CLS-LOC/train/...`, where I only need the training data in the `train/...` folder, the bind-mount would be
+where:
+- `inputs.squashfs` is the relative path to the stored `.squashfs` file
+- `:/input-data` is the folder where the data will appear inside the container file system
+- `:image-src=/` tells singularity it should be mounted as a folder (in contrast to a single file), and the `/` describes the path inside the `.squashfs` file the mount will appear. 
+
+For example, if the folder `ILSVRC/` has a deep tree structure such as `ILSVRC/Data/CLS-LOC/train/...`, where I only need the training data in the `train/...` folder, the bind-mount would be
 ```bash
- -B scratch/project_465XXXXXX/data/imagenet.squashfs:/train_images:image-src=/Data/CLS-LOC/train/
+ -B scratch/project_xxxxxxxxx/data/imagenet.squashfs:/train_images:image-src=/Data/CLS-LOC/train/
 ```
-where the large squashfs data is stored in the project's scratch folder `scratch/project_465XXXXXX/data`. We can then run PyTorch using the built-in dataset `ImageFolder` as if the dataset was stored in an ordinary folder inside the container,
+where the large squashfs data is stored in the project's scratch folder `scratch/project_xxxxxxxxx/data`. 
+
+We can then run PyTorch using the built-in dataset `ImageFolder` as if the dataset was stored in an ordinary folder inside the container,
 ```python
 from torchvision.datasets import ImageFolder
 dataset = ImageFolder('/train_images')  # Data is bind-mounted at /train_images 
@@ -49,46 +46,76 @@ dataset = ImageFolder('/train_images')  # Data is bind-mounted at /train_images
 Hierarchical Data Format (HDF5) is a well-established high-performance file format, which interfaces well with the popular `numpy` library through its `h5py` Python interface. This convenience does come at a cost of poor compatibility with irregularly shaped data, such as images with varying shapes and graph networks. 
 
 ### Data conversion
-Converting a dataset into the HDF5 format can be done entirely in Python. However, in order to unpack archive data to raw data on LUMI, one needs to first write a _parser_ which can read the archive data and stream it into the HDF5 format. This parser can be written using Python native packages such as `zipfile`, `tarfile` or the higher-level `shutil`. An example of such a parser can be seen [here](https://github.com/Lumi-supercomputer/LUMI-AI-example/blob/95444cb13eec48f6eb78d62f73449d859d0e8414/scripts/generics.py#L37) for the 157GB imagenet dataset, however this script is not general-purpose and must be adapted for each dataset. Once the parser is in place, it is quite straightforward to create the desired HDF5 file using the `hdf5.File().create_dataset` as illustrated [here](https://github.com/Lumi-supercomputer/LUMI-AI-example/blob/95444cb13eec48f6eb78d62f73449d859d0e8414/scripts/hdf5/convert_to_hdf5.py#L14), where the data needs to fit into a large `numpy.ndarray`-like shape like for the tiny-imagenet.
+Converting a dataset into the HDF5 format can be done entirely in Python. However, in order to unpack archive data to raw data on LUMI, one needs to first write a _parser_ which can read the archive data and stream it into the HDF5 format. This parser can be written using Python native packages such as `zipfile`, `tarfile` or the higher-level `shutil`. An example of such a parser can be seen [here](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/blob/a3ae45cc82ede40fd5e509567d69bcf7bad0a60f/03-file-formats/scripts/generics.py#L15) for the 157GB ImageNet-1k dataset, however this script is not general-purpose and must be adapted for each dataset. Once the parser is in place, it is quite straightforward to create the desired HDF5 file using the `hdf5.File().create_dataset` as illustrated [here](./scripts/hdf5/convert_to_hdf5.py#L11), where the data needs to fit into a large `numpy.ndarray`-like shape like for the tiny ImageNet.
 
 ### Running PyTorch
-In order to create a PyTorch `DataLoader`, we need to have a PyTorch `dataset` which fetches items and knows about the size of the data. The `dataset` can be different depending on the data, and as such needs to be custom-made to each project as well. This can be done by opening the HDF5 file using the `h5py` library and fetching items using ordinary indexing of numpy-like objects. An example is illustrated where the custom dataset class is [created here](https://github.com/Lumi-supercomputer/LUMI-AI-example/blob/95444cb13eec48f6eb78d62f73449d859d0e8414/scripts/hdf5/hdf5_dataset.py#L6) for the tiny-imagenet and is used in a vision transformer application [here](https://github.com/Lumi-supercomputer/LUMI-AI-example/blob/95444cb13eec48f6eb78d62f73449d859d0e8414/scripts/hdf5/visiontransformer-hdf5.py#L72) as well.
+In order to create a PyTorch `DataLoader`, we need to have a PyTorch `dataset` which fetches items and knows about the size of the data. The `dataset` can be different depending on the data, and as such needs to be custom-made to each project as well. This can be done by opening the HDF5 file using the `h5py` library and fetching items using ordinary indexing of numpy-like objects. An example is illustrated where the custom dataset class is [created here](./scripts/hdf5/hdf5_dataset.py#L7) for the tiny ImageNet and is used in a vision transformer application [here](./run-scripts/training-benchmarks/compare-dataset-training.py) as well.
 
 ## LMDB
 Lightning Memory-Mapped Database (LMDB) is a very fast file format, which like squashfs imposes no restriction on the shape of the data and thus offers good compatibility. This is achieved through memory-mapped files that provide fast access without necessarily loading the entire dataset into memory.
 
 ### Data conversion
-The process to convert to LMDB is quite similar to that of HDF5. We first need to parse the archive file and then process using the Python library `lmdb`. However, as this format is more flexible and not strictly bound to conventions of `numpy` arrays, creating and processing the data is slightly more complicated. An example of this is found [here](https://github.com/Lumi-supercomputer/LUMI-AI-example/blob/95444cb13eec48f6eb78d62f73449d859d0e8414/scripts/lmdb/convert_to_lmdb.py) for the tiny-imagenet in raw format and [here](https://github.com/Lumi-supercomputer/LUMI-AI-example/blob/95444cb13eec48f6eb78d62f73449d859d0e8414/scripts/lmdb/convert_large_to_lmdb.py) for the large imagenet in a `.zip` file format. 
+The process to convert to LMDB is quite similar to that of HDF5. We first need to parse the archive file and then process using the Python library `lmdb`. However, as this format is more flexible and not strictly bound to conventions of `numpy` arrays, creating and processing the data is slightly more complicated. An example of this is found [here](./scripts/lmdb/convert_to_lmdb.py) for the tiny ImageNet in raw format and [here](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/blob/main/03-file-formats/scripts/lmdb/convert_large_to_lmdb.py) for ImageNet-1k in a `.zip` file format. 
 
 ### Running PyTorch
-Similar to HDF5, we require a custom built `dataset` for the LMDB file format in order to efficiently load the data into PyTorch through the `DataLoader` framework. This can likewise be created using the `lmdb` Python library as illustrated [here](https://github.com/Lumi-supercomputer/LUMI-AI-example/blob/95444cb13eec48f6eb78d62f73449d859d0e8414/scripts/lmdb/lmdb_dataset.py#L10). The `dataset` is more complicated since we now  need to encode the data to binary ourselves. 
+Similar to HDF5, we require a custom built `dataset` for the LMDB file format in order to efficiently load the data into PyTorch through the `DataLoader` framework. This can likewise be created using the `lmdb` Python library as illustrated [here](./scripts/lmdb/lmdb_dataset.py#L10). The `dataset` is more complicated since we now  need to encode the data to binary ourselves. 
 
 ## Performance
 The following benchmarks compare loading performance across the different file formats using PyTorch DataLoader on both small and large ImageNet datasets.
 
-### Synthetic Benchmark
+### Synthetic Benchmark (Tiny ImageNet)
 In the synthetic benchmark, we measure how quickly samples can be loaded into Python using the PyTorch `DataLoader` for the various different file formats. The loop time is measured for both the tiny and large ImageNet a number of times. Here we report the measured average and standard deviation. 
-For the tiny imagenet, we loop through the entire dataset of 100.000 images. This is tested `N` times, where each job is executed independently to ensure a fresh node is used each time. The result is as follows;
+For the tiny ImageNet, we loop through the entire dataset of 100.000 images. This is tested `N` times, where each job is executed independently to ensure a fresh node is used each time. The result is as follows;
 
 |          | mean (s) | std (s) |  N  |
 | :------: | :------: | :-----: | :-: |
-| squashfs |  48.62   |  0.86   | 10  |
-|   HDF5   |  36.51   |  2.65   | 10  |
-|   LMDB   |  35.26   |  1.98   | 10  |
+| squashfs |  49.15   |  1.98   | 10  |
+|   HDF5   |  37.89   |  1.81   | 10  |
+|   LMDB   |  31.66   |  0.67   | 10  |
 
 HDF5 and LMDB show similar performance, while squashfs is about 33% slower. The parameters of the `DataLoader` are as follows:
 `DataLoader(data, batch_size=32, shuffle=True, num_workers=7)`
-That is, the data is shuffled to be loaded in a random order, and is loaded in batches of 32 samples at a time. The number of workers is set equal to the number of CPUs requested in the allocation. Where on [LUMI one should maximally request 7 cores per GPU requested](https://lumi-supercomputer.github.io/LUMI-training-materials/User-Updates/Update-202308/responsible-use/#core-and-memory-use-on-small-g-and-dev-g).
+That is, the data is shuffled to be loaded in a random order, and is loaded in batches of 32 samples at a time. The number of workers is set equal to the number of CPUs requested in the allocation, which is 7 here as on [LUMI one should maximally request 7 cores per GPU requested](https://lumi-supercomputer.github.io/LUMI-training-materials/User-Updates/Update-202308/responsible-use/#core-and-memory-use-on-small-g-and-dev-g).
 
 We can repeat the benchmark in a sequential job with one CPU core and `num_worker=1`: we find that squashfs and LMDB scales as you would expect, however HDF5 does not run well sequentially.
 
 |          | mean (s) | std (s) |  N  |
 | :------: | :------: | :-----: | :-: |
-| squashfs |  247.25  |  1.53   |  5  |
-|   HDF5   |  1884.7  |  0.46   |  5  |
-|   LMDB   |  209.95  |  15.99  |  5  |
+| squashfs |  249.19  |  10.18  | 10  |
+|   HDF5   | 1373.06  |  16.39  | 10  |
+|   LMDB   |  184.09  |   2.47  | 10  |
 
-For the large imagenet, we loop through 200.000 out of the 1.2 million images for the formats compatible with varying image size. The varying image sizes pose a critical problem for the HDF5 format, since it requires the data to fit into `ndarray`-like (d-dimensional hypercube) data structures. While data padding is possible, this is not pursued here to keep the comparison fair. The job is again executed independently `N` times and identical `DataLoader` parameters are used.
+#### Running the Benchmark
+
+1. Download the date with `get_data.sh`. This step requires quite some time and disk space.
+2. Create a venv for `lmdb` with `install_venv.sh` as there are some packages missing in the container.
+3. Replace the account `project_xxxxxxxxx` in `convert.sh` with your project id.
+4. Convert the data to `squashfs`, `lmdb`, and `hdf5` using `make convert`. This will launch three batch jobs.
+5. Validate that the data has been converted.
+    
+    a. There should be two `squashfs` files (one for training and one for validation) listed when executing `ls -lsh data-formats/squashfs/`.
+
+    b. There should be two `lmdb` files (one for training and one for validation) listed when executing `ls -lsh data-formats/lmdb/`.
+
+    c. There should be two `hdf5` files (one for training and one for validation) listed when executing `ls -lsh data-formats/hdf5/`.
+    
+6. Replace the account `project_xxxxxxxxx` in `run-scripts/simple-benchmarks/run-comp-seq.sh` and `run-scripts/simple-benchmarks/run-comp-tiny.sh`  with your project id.
+
+7. Run the benchmarks. Each command will launch three jobs with one of them for each file format. You should run each command multiple times to get a better estimate.
+
+    a. For the parallel benchmark: `make bench-par`
+
+    b. For the sequential benchmark: `make bench-seq`
+
+8. Post process the benchmarks once the jobs above are done. It will print you a table showing the average time, std, and number of runs for each file format.
+
+    a. For the parallel benchmark: `make post-par`
+
+    b. For the sequential benchmark: `make post-seq`
+
+### Synthetic Benchmark (ImageNet-1k)
+
+For the ImageNet-1k, we loop through 200.000 out of the 1.2 million images for the formats compatible with varying image size. The varying image sizes pose a critical problem for the HDF5 format, since it requires the data to fit into `ndarray`-like (d-dimensional hypercube) data structures. While data padding is possible, this is not pursued here to keep the comparison fair. The job is again executed independently `N` times and identical `DataLoader` parameters are used.
 
 |          | mean (s) | std (s) |  N  |
 | :------: | :------: | :-----: | :-: |
@@ -96,6 +123,19 @@ For the large imagenet, we loop through 200.000 out of the 1.2 million images fo
 |   LMDB   | 1546.53  |  65.07  |  3  |
 
 LMDB shows roughly 28% better performance than squashfs. 
+
+> [!NOTE]  
+> The scripts for the ImageNet-1k benchmark can be found in an old version of the repository [here](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/tree/a3ae45cc82ede40fd5e509567d69bcf7bad0a60f/03-file-formats).
+> We are working on updating them.
+
+
+### Training Benchmark (Tiny ImageNet)
+
+The file [run-scripts/training-benchmarks/compare-dataset-training.py](./run-scripts/training-benchmarks/compare-dataset-training.py) implements a comparison between the three formats when training a vision transformer as in chapter 01. You can run the comparison by preparing the data of Tiny ImageNet as with the synthetic benchmark and then executing the following two steps:
+
+- Run the benchmarks with `make bench-vit`. It will launch three jobs with one of them for each file format. You should run each command multiple times to get a better estimate.
+
+- Post process the benchmarks with `make post-vit` once the jobs above are done. It will print you a table showing the average time, std, and number of runs for each file format.
 
 ### Table of contents
 
