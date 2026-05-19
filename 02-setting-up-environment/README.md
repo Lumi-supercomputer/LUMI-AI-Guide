@@ -51,12 +51,12 @@ The GitHub releases in a [public GitHub repository](https://github.com/lumi-ai-f
 
 ## Interacting with a containerized environment
 
-The Python environment from an image can be accessed either interactively by spawning a shell instance within a container (`singularity shell` command) or by executing commands within a container (`singularity exec` command).
+The Python environment from an image can be accessed either interactively by spawning a shell instance within a container (`singularity shell` command) or by executing commands within a container (`singularity run` command).
 
 To inspect which specific packages are included in the images you can use this simple command:
 
 ```
-export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r64f21m43t29-20260225_144743/lumi-multitorch-full-u24r64f21m43t29-20260225_144743.sif
+export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
 singularity run $SIF pip list
 ``` 
 
@@ -69,10 +69,13 @@ We can check whether the selected PyTorch image detects the allocated GPU with t
 The command
 
 ```
+# this module facilitates the use of singularity containers on LUMI
 module purge
 module use /appl/local/laifs/modules
 module load lumi-aif-singularity-bindings
-export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r64f21m43t29-20260225_144743/lumi-multitorch-full-u24r64f21m43t29-20260225_144743.sif
+# export path to used container image
+export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
+# run job on LUMI that prints out the number of reserved GPUs
 srun -A <your-project-id> -p small-g -n 1 --gpus-per-task=1 singularity run $SIF python -c "import torch; print(torch.cuda.device_count())"
 ```
 
@@ -92,28 +95,60 @@ If you prefer to set the bindings manually, we recommend taking a look at the [R
 
 ## Installing additional Python packages in a container 
 
-You might find yourself in a situation where none of the provided containers contain all Python packages you need. One possible way of adding custom packages not included in the image is to use a virtual environment on top of the conda environment. For this example, we need to add the HDF5 Python package `h5py` to the environment:
+You might find yourself in a situation where none of the provided containers contain all Python packages you need. One possible way of adding custom packages not included in the image is to use a virtual environment on top of the conda environment. For this example, we need to add the hyperparameter optimization Python package `optuna` to the environment:
 
 ```
+# this module facilitates the use of singularity containers on LUMI
 module purge
 module use /appl/local/laifs/modules
 module load lumi-aif-singularity-bindings
-export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r64f21m43t29-20260225_144743/lumi-multitorch-full-u24r64f21m43t29-20260225_144743.sif
+# export path to used container image
+export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
+# open shell in the container
 singularity shell $SIF
-Singularity> python -m venv h5-env --system-site-packages
-Singularity> source h5-env/bin/activate
-(h5-env) Singularity> pip install h5py
+# create a venv in the container with access to the packages from the container
+Singularity> python -m venv optuna-env --system-site-packages
+# activate the venv and install the optuna package
+Singularity> source optuna-env/bin/activate
+(optuna-env) Singularity> pip install optuna
 ```
 
-This will create an `h5-env` environment in the working directory. The `--system-site-packages` flag gives the virtual environment access to the packages from the container. Now one can execute a script with and import the `h5py` package. To execute a script called `my-script.py` within the container using the virtual environment, use the additional activation command:
+Instead of doing this whole process manually, you can execute `sh create_venv.sh`. This will create an `optuna-env` environment in the working directory. The `--system-site-packages` flag gives the virtual environment access to the packages from the container.
+
+You can execute `sbatch run_venv.sh` to check if the installation was successful. The output file should print out versions of `optuna` and `PyTorch`. It should also say `torch.cuda.is_available() True` to ensure that the PyTorch installation still supports GPUs.
+
+The script `run_venv.sh` has the below extra lines to execute a script called `test_packages.py` within the container using the virtual environment:
 
 ```
-export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r64f21m43t29-20260225_144743/lumi-multitorch-full-u24r64f21m43t29-20260225_144743.sif
-singularity run $SIF bash -c 'source h5-env/bin/activate && python my-script.py'
+export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
+singularity run $SIF bash -c 'source optuna-env/bin/activate && python test_packages.py'
 ```
 
-This approach allows extending the environment without rebuilding the container from scratch every time a new package is added. The drawback is that the virtual environment is disjoint from the container, which makes it difficult to move, as the path to the virtual environment needs to be updated accordingly. Moreover, installing Python packages typically creates thousands of small files. This puts a lot of strain on the Lustre file system and might exceed your file quota.
-This problem can be solved by creating a new container using the [cotainr tool](https://lumi-supercomputer.github.io/LUMI-training-materials/ai-20241126/extra_06_BuildingContainers/) or turning the virtual environment directory into a [SquashFS file](https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop/blob/main/07_Extending_containers_with_virtual_environments_for_faster_testing/examples/extending_containers_with_venv.md). The examples included in this repository use the [SquashFS](https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop/blob/main/07_Extending_containers_with_virtual_environments_for_faster_testing/examples/extending_containers_with_venv.md) option.
+This approach allows extending the environment without rebuilding the container from scratch every time a new package is added. 
+
+### Adjustments for filesystem performance.
+Installing Python packages typically creates thousands of small files. This puts a lot of strain on the Lustre file system and might exceed your file quota. This problem can be solved by turning the virtual environment directory into a SquashFS file as follows.
+
+To create a squashfs file for our example you can execute `sh create_squashfs.sh` which uses the below lines to create a squashfs files of the venv and deletes the venv.
+The `-processors 1` (use one CPU thread which is benefical on LUMI login nodes) and `-no-xattrs` (disables extended attributes as they cause warnings on LUMI) are recommended arguments on LUMI.
+
+```
+mksquashfs optuna-env optuna-env.sqsh -processors 1 -no-xattrs
+rm -rf optuna-env # the myenv directory can be deleted
+```
+
+You can execute `sbatch run_squashfs.sh` to check if the installation was successful. The output file should print out versions of `optuna` and `PyTorch`. It should also say `torch.cuda.is_available() True` to ensure that the PyTorch installation still supports GPUs.
+It uses the below lines to enable the use of the packages in the squashfs container:
+
+```
+export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
+export SINGULARITYENV_PREPEND_PATH=/user-software/bin # gives access to packages inside the container
+singularity run -B optuna-env.sqsh:/user-software:image-src=/ $SIF python test_packages.py
+```
+
+There are other options to adding new packages to a container:
+- one is creating a new container using the [cotainr tool](https://lumi-supercomputer.github.io/LUMI-training-materials/ai-20241126/extra_06_BuildingContainers/)
+- another one is `singularity build` as illustrated in the [LUMI Docs](https://docs.lumi-supercomputer.eu/laif/software/ai-environment/#build-new-containers-based-on-the-images).
 
 ## Custom images
 
