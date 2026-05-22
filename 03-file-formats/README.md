@@ -95,7 +95,7 @@ That is, the data is shuffled to be loaded in a random order, and is loaded in b
 
 7. Run the benchmark with `make bench-par`. Each command will launch three jobs with one of them for each file format. You should run each command multiple times to get a better estimate.
 
-8. Post process the benchmarks `make post-par` once the jobs above are done. It will print you a table showing the average time, std, and number of runs for each file format.
+8. Post process the benchmark `make post-par` once the jobs above are done. It will print you a table showing the average time, std, and number of runs for each file format.
 
 ### Synthetic Benchmark (ImageNet-1k)
 
