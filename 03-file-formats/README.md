@@ -77,14 +77,6 @@ HDF5 and LMDB show similar performance, while squashfs is about 33% slower. The 
 `DataLoader(data, batch_size=32, shuffle=True, num_workers=7)`
 That is, the data is shuffled to be loaded in a random order, and is loaded in batches of 32 samples at a time. The number of workers is set equal to the number of CPUs requested in the allocation, which is 7 here as on [LUMI one should maximally request 7 cores per GPU requested](https://lumi-supercomputer.github.io/LUMI-training-materials/User-Updates/Update-202308/responsible-use/#core-and-memory-use-on-small-g-and-dev-g).
 
-We can repeat the benchmark in a sequential job with one CPU core and `num_worker=1`: we find that squashfs and LMDB scales as you would expect, however HDF5 does not run well sequentially.
-
-|          | mean (s) | std (s) |  N  |
-| :------: | :------: | :-----: | :-: |
-| squashfs |  249.19  |  10.18  | 10  |
-|   HDF5   | 1373.06  |  16.39  | 10  |
-|   LMDB   |  184.09  |   2.47  | 10  |
-
 #### Running the Benchmark
 
 1. Download the date with `get_data.sh`. This step requires quite some time and disk space.
@@ -101,17 +93,9 @@ We can repeat the benchmark in a sequential job with one CPU core and `num_worke
     
 6. Replace the account `project_xxxxxxxxx` in `run-scripts/simple-benchmarks/run-comp-seq.sh` and `run-scripts/simple-benchmarks/run-comp-tiny.sh`  with your project id.
 
-7. Run the benchmarks. Each command will launch three jobs with one of them for each file format. You should run each command multiple times to get a better estimate.
+7. Run the benchmark with `make bench-par`. Each command will launch three jobs with one of them for each file format. You should run each command multiple times to get a better estimate.
 
-    a. For the parallel benchmark: `make bench-par`
-
-    b. For the sequential benchmark: `make bench-seq`
-
-8. Post process the benchmarks once the jobs above are done. It will print you a table showing the average time, std, and number of runs for each file format.
-
-    a. For the parallel benchmark: `make post-par`
-
-    b. For the sequential benchmark: `make post-seq`
+8. Post process the benchmarks `make post-par` once the jobs above are done. It will print you a table showing the average time, std, and number of runs for each file format.
 
 ### Synthetic Benchmark (ImageNet-1k)
 
