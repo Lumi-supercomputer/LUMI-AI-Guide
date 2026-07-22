@@ -75,7 +75,7 @@ async def main():
     with open("results.json", "w", encoding="utf-8") as f:
         json.dump(results, f, indent=4, ensure_ascii=False)
 
-    print(f"Done! Processed {len(results)} prompts.")
+    print(f"Done! Processed {len(results)} prompts and saved to 'results.json'.")
 
 
 if __name__ == "__main__":
