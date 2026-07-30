@@ -20,6 +20,7 @@ SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_13062
 export MPICH_MPIIO_STATS=1
 export MPICH_MEMORY_REPORT=1
 
+# set MIOPEN temp folder
 export MIOPEN_CUSTOM_CACHE_DIR="/tmp/miopen-cache-${USER}"
 export MIOPEN_USER_DB_PATH="/tmp/miopen-config-${USER}"
 mkdir -p "$MIOPEN_CUSTOM_CACHE_DIR" "$MIOPEN_USER_DB_PATH"

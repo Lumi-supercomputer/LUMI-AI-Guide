@@ -14,6 +14,7 @@ module purge
 module use /appl/local/laifs/modules
 module load lumi-aif-singularity-bindings
 
+# set MIOPEN temp folder
 export MIOPEN_CUSTOM_CACHE_DIR="/tmp/miopen-cache-${USER}"
 export MIOPEN_USER_DB_PATH="/tmp/miopen-config-${USER}"
 mkdir -p "$MIOPEN_CUSTOM_CACHE_DIR" "$MIOPEN_USER_DB_PATH"
