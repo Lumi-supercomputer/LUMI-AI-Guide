@@ -13,10 +13,9 @@ module purge
 module use /appl/local/laifs/modules
 module load lumi-aif-singularity-bindings
 
-# Set MIOPEN temp folder
-MIOPEN_DIR=$(mktemp -d)
-export MIOPEN_CUSTOM_CACHE_DIR=$MIOPEN_DIR/cache
-export MIOPEN_USER_DB_PATH=$MIOPEN_DIR/config
+export MIOPEN_CUSTOM_CACHE_DIR="/tmp/miopen-cache-${USER}"
+export MIOPEN_USER_DB_PATH="/tmp/miopen-config-${USER}"
+mkdir -p "$MIOPEN_CUSTOM_CACHE_DIR" "$MIOPEN_USER_DB_PATH"
 
 # We use the PyTorch container provided by the LUMI AI Factory Services, which contains vLLM.
 export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
