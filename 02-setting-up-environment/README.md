@@ -164,12 +164,14 @@ MIOpen's redirects the cache on LUMI to a **fixed, non-per-user path** under the
 
 ```bash
 export MIOPEN_CUSTOM_CACHE_DIR="/tmp/miopen-cache-${USER}"
+mkdir -p "$MIOPEN_CUSTOM_CACHE_DIR"
 ```
 
 **`MIOPEN_USER_DB_PATH`** User performance (tuning) database. [Docs](https://rocm.docs.amd.com/projects/MIOpen/en/latest/conceptual/tuningdb.html)
 
 ```bash
 export MIOPEN_USER_DB_PATH="/tmp/miopen-config-${USER}"
+mkdir -p "$MIOPEN_USER_DB_PATH"
 ```
 
 ### PyTorch, Hugging Face and vLLM caches
