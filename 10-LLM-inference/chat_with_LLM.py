@@ -6,7 +6,7 @@ from openai import OpenAI
 
 def main():
     # 1. Automatically find the socket file and set up the connection
-    socket_path = f"/tmp/vllm-{os.environ.get("SLURM_JOB_ID")}.sock"
+    socket_path = f"/tmp/vllm-{os.environ.get('SLURM_JOB_ID')}.sock"
     if not os.path.exists(socket_path):
         print(f"Error: Socket not found at {socket_path}")
         sys.exit(1)
