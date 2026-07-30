@@ -154,6 +154,47 @@ There are other options to adding new packages to a container:
 
 In theory, you can also bring your own container images or convert images from other registries (DockerHub for instance) to the singularity format. In this case it remains your responsibility to keep the container compatible with LUMI's hardware and system environment. We strongly recommend building your containers on top of the LUMI base images provided. 
 
+## Environment Variables
+
+### MIOpen caches
+
+MIOpen's defaults point at home, but in release builds it detects a networked filesystem (like LUMI's Lustre home) and, when the variable is unset, redirects the cache to a **fixed, non-per-user path** under the node-local temp directory (`$TMPDIR/.cache/miopen` and `$TMPDIR/.config/miopen`). Because that path is shared, when a node is shared with other users the first user to create it owns it and everyone else hits permission-denied errors. The exports fix this by pinning each cache to an explicit **per-user** path:
+
+**`MIOPEN_CUSTOM_CACHE_DIR`** — compiled-kernel cache. [Docs](https://rocm.docs.amd.com/projects/MIOpen/en/latest/conceptual/cache.html)
+
+```bash
+export MIOPEN_CUSTOM_CACHE_DIR="/tmp/miopen-cache-${USER}"
+```
+
+**`MIOPEN_USER_DB_PATH`** — user performance (tuning) database. [Docs](https://rocm.docs.amd.com/projects/MIOpen/en/latest/conceptual/tuningdb.html)
+
+```bash
+export MIOPEN_USER_DB_PATH="/tmp/miopen-config-${USER}"
+```
+
+### PyTorch, Hugging Face and vLLM caches
+
+Several run scripts export the same environment variables before launching a job to redirect framework caches away from your **Lustre** home directory, which has a strict per-user file-count quota. We recoomend redirecting to `/scratch/${SLURM_JOB_ACCOUNT}/${USER}/`.
+
+**`TORCH_HOME`** — PyTorch's cache for downloaded models and weights. Default: `~/.cache/torch`. [Docs](https://docs.pytorch.org/docs/stable/hub.html)
+
+```bash
+export TORCH_HOME="/scratch/${SLURM_JOB_ACCOUNT}/${USER}/torch_home"
+```
+
+**`HF_HOME`** — Hugging Face cache (models, datasets, tokenizers, token). Default: `~/.cache/huggingface`. [Docs](https://huggingface.co/docs/huggingface_hub/package_reference/environment_variables)
+
+```bash
+export HF_HOME=/scratch/$SLURM_JOB_ACCOUNT/hf-cache/
+```
+
+**`VLLM_CACHE_ROOT`** — vLLM's cache for compiled/graph artifacts. Default: `~/.cache/vllm`. [Docs](https://docs.vllm.ai/en/stable/configuration/env_vars/)
+
+```bash
+export VLLM_CACHE_ROOT=/scratch/$SLURM_JOB_ACCOUNT/vllm-cache
+```
+
+
 
 ### Table of contents
 
