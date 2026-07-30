@@ -158,7 +158,7 @@ In theory, you can also bring your own container images or convert images from o
 
 ### MIOpen caches
 
-MIOpen's defaults point at home, but in release builds it detects a networked filesystem (like LUMI's Lustre home) and, when the variable is unset, redirects the cache to a **fixed, non-per-user path** under the node-local temp directory (`$TMPDIR/.cache/miopen` and `$TMPDIR/.config/miopen`). Because that path is shared, when a node is shared with other users the first user to create it owns it and everyone else hits permission-denied errors. The exports fix this by pinning each cache to an explicit **per-user** path:
+MIOpen's redirects the cache on LUMI to a **fixed, non-per-user path** under the node-local temp directory (`$TMPDIR/.cache/miopen` and `$TMPDIR/.config/miopen`). Because that path is shared, when a node is shared with other users the first user to create it owns it and everyone else hits permission-denied errors. The exports fix this by pinning each cache to an explicit **per-user** path:
 
 **`MIOPEN_CUSTOM_CACHE_DIR`** — compiled-kernel cache. [Docs](https://rocm.docs.amd.com/projects/MIOpen/en/latest/conceptual/cache.html)
 
