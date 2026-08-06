@@ -156,9 +156,11 @@ In theory, you can also bring your own container images or convert images from o
 
 ## Environment Variables
 
+We advice you to set some environment variables when using LUMI. The below one lists the most essential ones. Depending on your workload more environment variables might be necessary.
+
 ### MIOpen caches
 
-MIOpen's redirects the cache on LUMI to a **fixed, non-per-user path** under the node-local temp directory (`$TMPDIR/.cache/miopen` and `$TMPDIR/.config/miopen`). Because that path is shared, when a node is shared with other users the first user to create it owns it and everyone else hits permission-denied errors. The exports fix this by pinning each cache to an explicit **per-user** path:
+MIOpen's redirects the cache on LUMI to a **fixed, non-per-user path** under the [node-local temp directory](https://docs.lumi-supercomputer.eu/storage/#temporary-storage-on-compute-nodes) (`$TMPDIR/.cache/miopen` and `$TMPDIR/.config/miopen`). Because that path is shared, when a node is shared with other users the first user to create it owns it and everyone else hits permission-denied errors. The exports fix this by pinning each cache to an explicit **per-user** path:
 
 **`MIOPEN_CUSTOM_CACHE_DIR`** Compiled-kernel cache. [Docs](https://rocm.docs.amd.com/projects/MIOpen/en/latest/conceptual/cache.html)
 
@@ -176,7 +178,7 @@ mkdir -p "$MIOPEN_USER_DB_PATH"
 
 ### PyTorch, Hugging Face and vLLM caches
 
-Several run scripts export the same environment variables before launching a job to redirect framework caches away from your **Lustre** home directory, which has a strict per-user file-count quota. We recoomend redirecting to `/scratch/${SLURM_JOB_ACCOUNT}/${USER}/`.
+Several run scripts export the same environment variables before launching a job to redirect framework caches away from your Lustre home directory, which has a strict per-user file-count quota. We recoomend redirecting to `/scratch/${SLURM_JOB_ACCOUNT}/${USER}/`.
 
 **`TORCH_HOME`** PyTorch's cache for downloaded models and weights. Default: `~/.cache/torch`. [Docs](https://docs.pytorch.org/docs/stable/hub.html)
 
