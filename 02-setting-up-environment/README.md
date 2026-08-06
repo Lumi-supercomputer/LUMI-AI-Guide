@@ -160,7 +160,7 @@ We advice you to set some environment variables when using LUMI. The below one l
 
 ### MIOpen caches
 
-MIOpen's redirects the cache on LUMI to a **fixed, non-per-user path** under the [node-local temp directory](https://docs.lumi-supercomputer.eu/storage/#temporary-storage-on-compute-nodes) (`$TMPDIR/.cache/miopen` and `$TMPDIR/.config/miopen`). Because that path is shared, when a node is shared with other users the first user to create it owns it and everyone else hits permission-denied errors. The exports fix this by pinning each cache to an explicit **per-user** path:
+MIOpen's redirects the cache on LUMI to a **fixed, non-per-user path** under the [node-local temp directory](https://docs.lumi-supercomputer.eu/storage/#temporary-storage-on-compute-nodes) (`$TMPDIR/.cache/miopen` and `$TMPDIR/.config/miopen`). Because that path is shared, when a node is shared with other users the first user to create it owns it and everyone else hits permission-denied errors. The exports fix this by pinning each cache to an explicit **per-user** path. We create the folders if they do not exist to surpress warnings by MIOpen when running multi-rank jobs:
 
 **`MIOPEN_CUSTOM_CACHE_DIR`** Compiled-kernel cache. [Docs](https://rocm.docs.amd.com/projects/MIOpen/en/latest/conceptual/cache.html)
 
