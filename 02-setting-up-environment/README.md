@@ -158,22 +158,22 @@ In theory, you can also bring your own container images or convert images from o
 
 We advice you to set some environment variables when using LUMI. The below one lists the most essential ones. Depending on your workload more environment variables might be necessary.
 
-### MIOpen caches
+### MIOpen
+We focus on two environment variables:
 
-MIOpen's redirects the cache on LUMI to a **fixed, non-per-user path** under the [node-local temp directory](https://docs.lumi-supercomputer.eu/storage/#temporary-storage-on-compute-nodes) (`$TMPDIR/.cache/miopen` and `$TMPDIR/.config/miopen`). Because that path is shared, when a node is shared with other users the first user to create it owns it and everyone else hits permission-denied errors. The exports fix this by pinning each cache to an explicit **per-user** path. We create the folders if they do not exist to surpress warnings by MIOpen when running multi-rank jobs:
+- **`MIOPEN_CUSTOM_CACHE_DIR`** Compiled-kernel cache. [Docs](https://rocm.docs.amd.com/projects/MIOpen/en/latest/conceptual/cache.html)
 
-**`MIOPEN_CUSTOM_CACHE_DIR`** Compiled-kernel cache. [Docs](https://rocm.docs.amd.com/projects/MIOpen/en/latest/conceptual/cache.html)
+- **`MIOPEN_USER_DB_PATH`** User performance (tuning) database. [Docs](https://rocm.docs.amd.com/projects/MIOpen/en/latest/conceptual/tuningdb.html)
+
+
+MIOpen redirects the cache and database on LUMI to a **fixed, non-per-user path** under the [node-local temp directory](https://docs.lumi-supercomputer.eu/storage/#temporary-storage-on-compute-nodes) (`$TMPDIR/.cache/miopen` and `$TMPDIR/.config/miopen`). Because that path is shared, when a node is shared with other users the first user to create it owns it and everyone else hits permission-denied errors. The exports fix this by pinning each cache to an explicit **per-user** path:
+
+
 
 ```bash
 export MIOPEN_CUSTOM_CACHE_DIR="/tmp/miopen-cache-${USER}"
-mkdir -p "$MIOPEN_CUSTOM_CACHE_DIR"
-```
-
-**`MIOPEN_USER_DB_PATH`** User performance (tuning) database. [Docs](https://rocm.docs.amd.com/projects/MIOpen/en/latest/conceptual/tuningdb.html)
-
-```bash
 export MIOPEN_USER_DB_PATH="/tmp/miopen-config-${USER}"
-mkdir -p "$MIOPEN_USER_DB_PATH"
+mkdir -p "$MIOPEN_CUSTOM_CACHE_DIR" "$MIOPEN_USER_DB_PATH"
 ```
 
 ### PyTorch, Hugging Face and vLLM caches
