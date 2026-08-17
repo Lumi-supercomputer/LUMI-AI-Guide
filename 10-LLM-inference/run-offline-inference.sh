@@ -10,8 +10,7 @@
 
 # Load the bindings to give LUMI containers access to the file system of the working directory
 module purge
-module use /appl/local/laifs/modules
-module load lumi-aif-singularity-bindings
+module load Local-LAIF lumi-aif-singularity-bindings
 
 # set MIOPEN temp folder
 export MIOPEN_CUSTOM_CACHE_DIR="/tmp/miopen-cache-${USER}"

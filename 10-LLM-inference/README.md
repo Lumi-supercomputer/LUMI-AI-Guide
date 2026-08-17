@@ -99,8 +99,7 @@ Interacting with a running vLLM server requires you to be on the same compute no
     export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
 
     module purge
-    module use /appl/local/laifs/modules
-    module load lumi-aif-singularity-bindings
+    module load Local-LAIF lumi-aif-singularity-bindings
     ```
 
 4. **Launch a client script:**

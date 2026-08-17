@@ -71,8 +71,7 @@ The command
 ```
 # this module facilitates the use of singularity containers on LUMI
 module purge
-module use /appl/local/laifs/modules
-module load lumi-aif-singularity-bindings
+module load Local-LAIF lumi-aif-singularity-bindings
 # export path to used container image
 export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
 # run job on LUMI that prints out the number of reserved GPUs
@@ -87,8 +86,7 @@ To give LUMI containers access to the Slingshot network for good RCCL and MPI pe
 
 ```
 module purge
-module use /appl/local/laifs/modules
-module load lumi-aif-singularity-bindings
+module load Local-LAIF lumi-aif-singularity-bindings
 ```
 
 If you prefer to set the bindings manually, we recommend taking a look at the [Running containers on LUMI](https://lumi-supercomputer.github.io/LUMI-training-materials/ai-20240529/extra_05_RunningContainers/) lecture from the [LUMI AI workshop material](https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop).
@@ -100,8 +98,7 @@ You might find yourself in a situation where none of the provided containers con
 ```
 # this module facilitates the use of singularity containers on LUMI
 module purge
-module use /appl/local/laifs/modules
-module load lumi-aif-singularity-bindings
+module load Local-LAIF lumi-aif-singularity-bindings
 # export path to used container image
 export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
 # open shell in the container
