@@ -154,6 +154,51 @@ There are other options to adding new packages to a container:
 
 In theory, you can also bring your own container images or convert images from other registries (DockerHub for instance) to the singularity format. In this case it remains your responsibility to keep the container compatible with LUMI's hardware and system environment. We strongly recommend building your containers on top of the LUMI base images provided. 
 
+## Environment Variables
+
+We advice you to set some environment variables when using LUMI. The below one lists the most essential ones. Depending on your workload more environment variables might be necessary.
+
+### MIOpen
+We focus on two environment variables:
+
+- **`MIOPEN_CUSTOM_CACHE_DIR`** Compiled-kernel cache. [Docs](https://rocm.docs.amd.com/projects/MIOpen/en/latest/conceptual/cache.html)
+
+- **`MIOPEN_USER_DB_PATH`** User performance (tuning) database. [Docs](https://rocm.docs.amd.com/projects/MIOpen/en/latest/conceptual/tuningdb.html)
+
+
+MIOpen redirects the cache and database on LUMI to a **fixed, non-per-user path** under the [node-local temp directory](https://docs.lumi-supercomputer.eu/storage/#temporary-storage-on-compute-nodes) (`$TMPDIR/.cache/miopen` and `$TMPDIR/.config/miopen`). Because that path is shared, when a node is shared with other users the first user to create it owns it and everyone else hits permission-denied errors. The exports fix this by pinning each cache to an explicit **per-user** path:
+
+
+
+```bash
+export MIOPEN_CUSTOM_CACHE_DIR="/tmp/miopen-cache-${USER}"
+export MIOPEN_USER_DB_PATH="/tmp/miopen-config-${USER}"
+srun mkdir -p "$MIOPEN_CUSTOM_CACHE_DIR" "$MIOPEN_USER_DB_PATH"
+```
+
+### PyTorch, Hugging Face and vLLM caches
+
+Several run scripts export the same environment variables before launching a job to redirect framework caches away from your Lustre home directory, which has a strict per-user file-count quota. We recoomend redirecting to `/scratch/${SLURM_JOB_ACCOUNT}/${USER}/`.
+
+**`TORCH_HOME`** PyTorch's cache for downloaded models and weights. Default: `~/.cache/torch`. [Docs](https://docs.pytorch.org/docs/stable/hub.html)
+
+```bash
+export TORCH_HOME="/scratch/${SLURM_JOB_ACCOUNT}/${USER}/torch_home"
+```
+
+**`HF_HOME`** Hugging Face cache (models, datasets, tokenizers, token). Default: `~/.cache/huggingface`. [Docs](https://huggingface.co/docs/huggingface_hub/package_reference/environment_variables)
+
+```bash
+export HF_HOME=/scratch/$SLURM_JOB_ACCOUNT/hf-cache/
+```
+
+**`VLLM_CACHE_ROOT`** vLLM's cache for compiled/graph artifacts. Default: `~/.cache/vllm`. [Docs](https://docs.vllm.ai/en/stable/configuration/env_vars/)
+
+```bash
+export VLLM_CACHE_ROOT=/scratch/$SLURM_JOB_ACCOUNT/vllm-cache
+```
+
+
 
 ### Table of contents
 

@@ -21,9 +21,9 @@ export MPICH_MPIIO_STATS=1
 export MPICH_MEMORY_REPORT=1
 
 # set MIOPEN temp folder
-MIOPEN_DIR=$(mktemp -d)
-export MIOPEN_CUSTOM_CACHE_DIR=$MIOPEN_DIR/cache
-export MIOPEN_USER_DB=$MIOPEN_DIR/config
+export MIOPEN_CUSTOM_CACHE_DIR="/tmp/miopen-cache-${USER}"
+export MIOPEN_USER_DB_PATH="/tmp/miopen-config-${USER}"
+srun mkdir -p "$MIOPEN_CUSTOM_CACHE_DIR" "$MIOPEN_USER_DB_PATH"
 
 # Set your TORCH_HOME cache to scratch to avoid saving to home directory
 # https://docs.pytorch.org/docs/2.11/hub.html#where-are-my-downloaded-models-saved
