@@ -11,8 +11,7 @@
 
 # this module facilitates the use of LUMI AIF singularity containers on LUMI
 module purge
-module use /appl/local/laifs/modules
-module load lumi-aif-singularity-bindings
+module load Local-LAIF lumi-aif-singularity-bindings
 
 # set MIOPEN temp folder
 export MIOPEN_CUSTOM_CACHE_DIR="/tmp/miopen-cache-${USER}"
