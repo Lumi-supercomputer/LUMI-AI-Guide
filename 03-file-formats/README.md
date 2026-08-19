@@ -93,7 +93,7 @@ That is, the data is shuffled to be loaded in a random order, and is loaded in b
 
     c. There should be two `hdf5` files (one for training and one for validation) listed when executing `ls -lsh data-formats/hdf5/`.
     
-6. Replace the account `project_xxxxxxxxx` in `run-scripts/simple-benchmarks/run-comp-seq.sh` and `run-scripts/simple-benchmarks/run-comp-tiny.sh`  with your project id.
+6. Replace the account `project_xxxxxxxxx` in `run-scripts/simple-benchmarks/run-comp-tiny-par.sh` with your project id.
 
 7. Run the benchmark with `make bench-par`. Each command will launch three jobs with one of them for each file format. You should run each command multiple times to get a better estimate.
 
