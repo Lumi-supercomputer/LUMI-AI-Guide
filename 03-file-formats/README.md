@@ -117,7 +117,9 @@ LMDB shows roughly 28% better performance than squashfs.
 
 ### Training Benchmark (Tiny ImageNet)
 
-The file [run-scripts/training-benchmarks/compare-dataset-training.py](./run-scripts/training-benchmarks/compare-dataset-training.py) implements a comparison between the three formats when training a vision transformer as in chapter 01. You can run the comparison by preparing the data of Tiny ImageNet as with the synthetic benchmark and then executing the following two steps:
+The file [run-scripts/training-benchmarks/compare-dataset-training.py](./run-scripts/training-benchmarks/compare-dataset-training.py) implements a comparison between the three formats when training a vision transformer as in chapter 01. You can run the comparison by preparing the data of Tiny ImageNet as with the synthetic benchmark and then executing the following thre steps:
+
+-  Replace the account `project_xxxxxxxxx` in `run-scripts/training-benchmarks/run-comp-vision-transformer.sh` with your project id.
 
 - Run the benchmarks with `make bench-vit`. It will launch three jobs with one of them for each file format. You should run each command multiple times to get a better estimate.
 
