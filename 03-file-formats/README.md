@@ -93,7 +93,7 @@ That is, the data is shuffled to be loaded in a random order, and is loaded in b
 
     c. There should be two `hdf5` files (one for training and one for validation) listed when executing `ls -lsh data-formats/hdf5/`.
     
-6. Replace the account `project_xxxxxxxxx` in `run-scripts/simple-benchmarks/run-comp-seq.sh` and `run-scripts/simple-benchmarks/run-comp-tiny.sh`  with your project id.
+6. Replace the account `project_xxxxxxxxx` in `run-scripts/simple-benchmarks/run-comp-tiny-par.sh` with your project id.
 
 7. Run the benchmark with `make bench-par`. Each command will launch three jobs with one of them for each file format. You should run each command multiple times to get a better estimate.
 
@@ -117,7 +117,9 @@ LMDB shows roughly 28% better performance than squashfs.
 
 ### Training Benchmark (Tiny ImageNet)
 
-The file [run-scripts/training-benchmarks/compare-dataset-training.py](./run-scripts/training-benchmarks/compare-dataset-training.py) implements a comparison between the three formats when training a vision transformer as in chapter 01. You can run the comparison by preparing the data of Tiny ImageNet as with the synthetic benchmark and then executing the following two steps:
+The file [run-scripts/training-benchmarks/compare-dataset-training.py](./run-scripts/training-benchmarks/compare-dataset-training.py) implements a comparison between the three formats when training a vision transformer as in chapter 01. You can run the comparison by preparing the data of Tiny ImageNet as with the synthetic benchmark and then executing the following thre steps:
+
+-  Replace the account `project_xxxxxxxxx` in `run-scripts/training-benchmarks/run-comp-vision-transformer.sh` with your project id.
 
 - Run the benchmarks with `make bench-vit`. It will launch three jobs with one of them for each file format. You should run each command multiple times to get a better estimate.
 
