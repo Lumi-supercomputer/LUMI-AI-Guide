@@ -106,7 +106,7 @@ export WORLD_SIZE=$SLURM_NPROCS
 
 Then we run as follows:
 ```bash
-srun --cpu-bind=v,mask_cpu=$CPU_BIND_MASKS singularity run -B ../resources/ai-guide-env.sqsh:/user-software:image-src=/ $SIF bash -c "export RANK=\$SLURM_PROCID && export LOCAL_RANK=\$SLURM_LOCALID && python ddp_visiontransformer.py"
+srun --cpu-bind=v,mask_cpu=$CPU_BIND_MASKS singularity run -B ../resources/ai-guide-env.sqsh:/user-software:image-src=/ $SIF bash -c 'export RANK=$SLURM_PROCID && export LOCAL_RANK=$SLURM_LOCALID && python ddp_visiontransformer.py'
 ```
 Note that the `RANK` and `LOCAL_RANK` environment variables are exported inside the container and cannot be exported in the Slurm script, as they are only available inside the Slurm jobstep (after srun has launched the process).
 
@@ -259,7 +259,7 @@ export WORLD_SIZE=$SLURM_NPROCS
 
 Then we run as follows:
 ```bash
-srun --cpu-bind=v,mask_cpu=$CPU_BIND_MASKS singularity run  $SIF bash -c 'export RANK=$SLURM_PROCID; export LOCAL_RANK=$SLURM_LOCALID; python ds_visiontransformer.py --deepspeed --deepspeed_config ds_config.json'
+srun --cpu-bind=v,mask_cpu=$CPU_BIND_MASKS singularity run  $SIF bash -c 'export RANK=$SLURM_PROCID && export LOCAL_RANK=$SLURM_LOCALID && python ds_visiontransformer.py --deepspeed --deepspeed_config ds_config.json'
 ```
 Note that the `RANK` and `LOCAL_RANK` environment variables are exported inside the container and cannot be exported in the Slurm script, as they are only available inside the Slurm jobstep (after srun has launched the process).
 
@@ -289,7 +289,7 @@ When `srun` is used, Slurm binding options can be used in the job script:
 ```bash
 CPU_BIND_MASKS="0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000000fe000000,0x00000000000000fe,0x000000000000fe00,0x000000fe00000000,0x0000fe0000000000"
 
-srun --cpu-bind=v,mask_cpu=$CPU_BIND_MASKS singularity run $SIF bash -c "export RANK=\$SLURM_PROCID && export LOCAL_RANK=\$SLURM_LOCALID && python ddp_visiontransformer.py"
+srun --cpu-bind=v,mask_cpu=$CPU_BIND_MASKS singularity run $SIF bash -c 'export RANK=$SLURM_PROCID && export LOCAL_RANK=$SLURM_LOCALID && python ddp_visiontransformer.py'
 ```
 
 To output the binding information, `--cpu-bind=v` can be passed to `srun`:
