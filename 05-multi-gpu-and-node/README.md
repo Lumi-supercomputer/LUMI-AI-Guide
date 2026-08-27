@@ -106,7 +106,7 @@ export WORLD_SIZE=$SLURM_NPROCS
 
 Then we run as follows:
 ```bash
-srun --cpu-bind=v,mask_cpu=$CPU_BIND_MASKS singularity run -B ../resources/ai-guide-env.sqsh:/user-software:image-src=/ $SIF bash -c 'export RANK=$SLURM_PROCID && export LOCAL_RANK=$SLURM_LOCALID && python ddp_visiontransformer.py'
+srun --cpu-bind=v,mask_cpu=$CPU_BIND_MASKS singularity run $SIF bash -c 'export RANK=$SLURM_PROCID && export LOCAL_RANK=$SLURM_LOCALID && python ddp_visiontransformer.py'
 ```
 Note that the `RANK` and `LOCAL_RANK` environment variables are exported inside the container and cannot be exported in the Slurm script, as they are only available inside the Slurm jobstep (after srun has launched the process).
 
