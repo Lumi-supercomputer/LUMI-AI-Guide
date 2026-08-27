@@ -34,6 +34,8 @@ As a rule of thumb, at half precision (BF16/FP16), you need 2GB of VRAM per 1B p
 
 Since a single LUMI GCD has 64GB, one is not enough, so we use 2 GCDs (128GB total). For a detailed breakdown of different models and [quantisation](https://bentoml.com/llm/model-preparation/llm-quantization) levels, you can use [this VRAM calculator](https://apxml.com/tools/vram-calculator).
 
+> **💡 Note:** Beyond the weights, KV cache and ROCm overhead, some VRAM is also reserved for the HIP context and the RCCL communicator buffers used for tensor parallelism across GCDs. This memory is not counted by PyTorch's allocator, so leave some headroom in your budget.
+
 ## Workflow A: Server-client mode
 Use this if you want to keep the model loaded and interact with it multiple times.
 

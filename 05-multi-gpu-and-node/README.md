@@ -125,6 +125,9 @@ The environment variables that will be used for the distributed initialization (
 
 DeepSpeed implements a strategy for distributed training that mixes data parallelism with sharding of model parameters. It supports various levels of model sharding and offloading of parameters to CPU memory. DeepSpeed is particularly useful when your training job does not fit in the memory of a single GPU and you would like to scale your training job to multiple GPUs and/or nodes to leverage the increased combined memory capacity, as well as speed up the training job.
 
+> [!NOTE]
+> Not all of a GCD's 64 GB of VRAM is available to your model. The ROCm/HIP context and the RCCL communicator buffers reserve a portion that is **not** reported by `torch.cuda.memory_allocated()`. This overhead grows with the number of communicators, so it is small for plain DDP but can reach several GiB for tensor-, pipeline-, or expert-parallel setups. Leave some headroom when sizing your model to the available memory.
+
 ### Source code changes
 The script in [ds_visiontransformer.py](ds_visiontransformer.py) implements DeepSpeed on the visiontransformer example. The following changes to the source code are necessary:
 
