@@ -34,4 +34,4 @@ export LOCAL_WORLD_SIZE=$SLURM_GPUS_PER_NODE
 # Set up the CPU bind masks
 CPU_BIND_MASKS="0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000000fe000000,0x00000000000000fe,0x000000000000fe00,0x000000fe00000000,0x0000fe0000000000"
 
-srun --cpu-bind=v,mask_cpu=$CPU_BIND_MASKS singularity run $SIF bash -c "export RANK=\$SLURM_PROCID && export LOCAL_RANK=\$SLURM_LOCALID && python ddp_visiontransformer.py"
+srun --cpu-bind=v,mask_cpu=$CPU_BIND_MASKS singularity run $SIF bash -c 'export RANK=$SLURM_PROCID && export LOCAL_RANK=$SLURM_LOCALID && python ddp_visiontransformer.py'
