@@ -24,3 +24,17 @@ bench-dataloader:
 	  $(MODULES) && srun --account=$(ACCOUNT) --partition=small --time=00:10:00 --cpus-per-task=4 \
 	    singularity exec $(SIF) bash -c "source venv-tables/bin/activate && python3 bench_tabular_dataloader.py -ff $$fmt -N 10000"; \
 	done
+ ============================================================
+# PART 2 - Going deeper: does Parquet's internal row group
+# size matter for random access? (Parquet-only follow-up to
+# the bench-dataloader result above; CSV and HDF5 have no
+# equivalent tunable setting
+# ============================================================
+
+convert-rowgroups:
+	$(MODULES) && srun --account=$(ACCOUNT) --partition=small --time=00:10:00 --cpus-per-task=4 \
+	  singularity exec $(SIF) bash -c "source venv-tables/bin/activate && python3 tabular_rowgroup_experiment.py convert --input data-formats-tabular/raw/yellow_tripdata_2024-01.parquet"
+
+bench-rowgroups:
+	$(MODULES) && srun --account=$(ACCOUNT) --partition=small --time=00:10:00 --cpus-per-task=4 \
+	  singularity exec $(SIF) bash -c "source venv-tables/bin/activate && python3 tabular_rowgroup_experiment.py bench --datadir data-formats-tabular -N 10000"
