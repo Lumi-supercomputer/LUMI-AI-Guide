@@ -25,10 +25,8 @@ bench-dataloader:
 	    singularity exec $(SIF) bash -c "source venv-tables/bin/activate && python3 bench_tabular_dataloader.py -ff $$fmt -N 10000"; \
 	done
  ============================================================
-# PART 2 - Going deeper: does Parquet's internal row group
-# size matter for random access? (Parquet-only follow-up to
-# the bench-dataloader result above; CSV and HDF5 have no
-# equivalent tunable setting
+# PART 2 - does Parquet's internal row group
+# size matter for random access? 
 # ============================================================
 
 convert-rowgroups:
