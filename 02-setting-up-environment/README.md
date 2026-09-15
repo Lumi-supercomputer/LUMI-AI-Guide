@@ -155,6 +155,20 @@ In theory, you can also bring your own container images or convert images from o
 
 We advice you to set some environment variables when using LUMI. The below one lists the most essential ones. Depending on your workload more environment variables might be necessary.
 
+### Slingshot
+
+This is primarily relevant for multi-node jobs, since Slingshot is LUMI's inter-node network.
+
+The libfabric memory registration cache monitor controls how libfabric tracks memory used by the Slingshot network. The default choice (`memhooks`) can cause LUMI AI Factory containers to get stuck. Setting `FI_MR_CACHE_MONITOR=userfaultfd` prevents these hangs:
+
+```bash
+export FI_MR_CACHE_MONITOR=userfaultfd
+```
+
+In the future, `kdreg2` will be supported as a `FI_MR_CACHE_MONITOR` option in the containers (after `lumi-multitorch-u24r70f21m50t210-20260807_115122`) and become the default value of `FI_MR_CACHE_MONITOR`, replacing `memhooks`. It is the better choice going forward, but in practice `FI_MR_CACHE_MONITOR=userfaultfd` is sufficient to prevent the hangs today.
+
+For more on tuning RCCL (ROCm Communication Collectives Library, which handles collective GPU-to-GPU communication) over the Slingshot network, see the [RCCL tuning guide](https://github.com/HewlettPackard/shs-ccl-docs/blob/main/rccl/rccl_tuning_guide.md).
+
 ### MIOpen
 We focus on two environment variables:
 
@@ -194,7 +208,6 @@ export HF_HOME=/scratch/$SLURM_JOB_ACCOUNT/hf-cache/
 ```bash
 export VLLM_CACHE_ROOT=/scratch/$SLURM_JOB_ACCOUNT/vllm-cache
 ```
-
 
 
 ### Table of contents
