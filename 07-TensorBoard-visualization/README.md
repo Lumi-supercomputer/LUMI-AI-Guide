@@ -11,12 +11,13 @@ TensorBoard can be used to [visualize models, data, and training with PyTorch](h
 
 Since during distributed runs we use multiple processes, we set one of the processes to be responsible for collecting the logs. This can be done by using the `rank` environment variable assigned to every process created by Slurm. We can use this variable to assign the task of logging to the first process (rank 0). With just a few additions we can display some of the training images and loss, but additional metrics can be added using similar methods. 
 
-We can start the logger, called SummaryWriter, on the first process to generate logs into the directory `runs` as follows:
+We can start the logger, called SummaryWriter, on the first process to generate logs into a subdirectory of `runs` named after the Slurm job ID, so that each job shows up as a separate run in TensorBoard:
 ```python
+import os
 from torch.utils.tensorboard import SummaryWriter
     
 if rank == 0:
-    writer = SummaryWriter('runs')
+    writer = SummaryWriter(f"runs/{os.environ['SLURM_JOB_ID']}")
 ```
 
 After having configured the logger, we can visualize some of the images we use as a grid with Matplotlib like so:
@@ -72,7 +73,7 @@ TensorBoard can be used on LUMI via the [web interface](https://docs.lumi-superc
 
 ![Image title](../assets/images/web_interface_tensorboard.png)
 
-To launch it, select the log directory where you have data to visualize, which in this case would be the path to the `runs` directory, and the resources for the Slurm job.
+To launch it, select the log directory where you have data to visualize, which in this case would be the path to the `runs` directory (each job appears as a run named after its job ID), and the resources for the Slurm job.
 
 Note that TensorBoard is very memory intensive but has low CPU usage. Thus, in the case of performance problems, adding more memory during allocation can help.
 
