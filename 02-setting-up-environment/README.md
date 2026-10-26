@@ -159,13 +159,13 @@ We advice you to set some environment variables when using LUMI. The below one l
 
 This is primarily relevant for multi-node jobs, since Slingshot is LUMI's inter-node network.
 
-The libfabric memory registration cache monitor controls how libfabric tracks memory used by the Slingshot network. The default choice (`memhooks`) can cause LUMI AI Factory containers to get stuck. Setting `FI_MR_CACHE_MONITOR=userfaultfd` prevents these hangs:
+The libfabric memory registration cache monitor controls how libfabric tracks memory used by the Slingshot network. Starting with `lumi-multitorch-u24r72f21m50t211-20260929_104918`, the LUMI AI Factory containers use `kdreg2` as the default monitor, so no extra setting is needed (see the [release notes](https://github.com/lumi-ai-factory/laifs-container-recipes/releases/tag/lumi-multitorch-u24r72f21m50t211-20260929_104918)). If needed, the monitor can be changed with the `FI_MR_CACHE_MONITOR` environment variable:
 
 ```bash
-export FI_MR_CACHE_MONITOR=userfaultfd
+export FI_MR_CACHE_MONITOR=<mode>  # kdreg2 (default), userfaultfd or memhooks
 ```
 
-In the future, `kdreg2` will be supported as a `FI_MR_CACHE_MONITOR` option in the containers (after `lumi-multitorch-u24r70f21m50t210-20260807_115122`) and become the default value of `FI_MR_CACHE_MONITOR`, replacing `memhooks`. It is the better choice going forward, but in practice `FI_MR_CACHE_MONITOR=userfaultfd` is sufficient to prevent the hangs today.
+Older containers use `memhooks` by default, which can cause jobs using RCCL to hang. If you use an older container, set `FI_MR_CACHE_MONITOR=userfaultfd` to prevent these hangs.
 
 For more on tuning RCCL (ROCm Communication Collectives Library, which handles collective GPU-to-GPU communication) over the Slingshot network, see the [RCCL tuning guide](https://github.com/HewlettPackard/shs-ccl-docs/blob/main/rccl/rccl_tuning_guide.md).
 
