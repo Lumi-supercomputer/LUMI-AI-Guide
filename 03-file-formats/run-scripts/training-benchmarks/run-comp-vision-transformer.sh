@@ -14,7 +14,7 @@ module purge
 module load Local-LAIF lumi-aif-singularity-bindings
 
 # choose container
-SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
+SIF=/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20260929_104918/lumi-multitorch-full-u24r72f21m50t211-20260929_104918.sif
 
 export MPICH_MPIIO_STATS=1
 export MPICH_MEMORY_REPORT=1

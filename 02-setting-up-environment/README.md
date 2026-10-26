@@ -56,7 +56,7 @@ The Python environment from an image can be accessed either interactively by spa
 To inspect which specific packages are included in the images you can use this simple command:
 
 ```
-export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
+export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20260929_104918/lumi-multitorch-full-u24r72f21m50t211-20260929_104918.sif
 singularity run $SIF pip list
 ``` 
 
@@ -73,7 +73,7 @@ The command
 module purge
 module load Local-LAIF lumi-aif-singularity-bindings
 # export path to used container image
-export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
+export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20260929_104918/lumi-multitorch-full-u24r72f21m50t211-20260929_104918.sif
 # run job on LUMI that prints out the number of reserved GPUs
 srun -A <your-project-id> -p small-g -n 1 --gpus-per-task=1 singularity run $SIF python -c "import torch; print(torch.cuda.device_count())"
 ```
@@ -100,7 +100,7 @@ You might find yourself in a situation where none of the provided containers con
 module purge
 module load Local-LAIF lumi-aif-singularity-bindings
 # export path to used container image
-export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
+export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20260929_104918/lumi-multitorch-full-u24r72f21m50t211-20260929_104918.sif
 # open shell in the container
 singularity shell $SIF
 # create a venv in the container with access to the packages from the container
@@ -117,7 +117,7 @@ You can execute `sbatch run_venv.sh` to check if the installation was successful
 The script `run_venv.sh` has the below extra lines to execute a script called `test_packages.py` within the container using the virtual environment:
 
 ```
-export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
+export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20260929_104918/lumi-multitorch-full-u24r72f21m50t211-20260929_104918.sif
 singularity run $SIF bash -c 'source optuna-env/bin/activate && python test_packages.py'
 ```
 
@@ -138,7 +138,7 @@ You can execute `sbatch run_squashfs.sh` to check if the installation was succes
 It uses the below lines to enable the use of the packages in the squashfs container:
 
 ```
-export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
+export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20260929_104918/lumi-multitorch-full-u24r72f21m50t211-20260929_104918.sif
 export SINGULARITYENV_PREPEND_PATH=/user-software/bin # gives access to packages inside the container
 singularity run -B optuna-env.sqsh:/user-software:image-src=/ $SIF python test_packages.py
 ```
