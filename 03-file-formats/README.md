@@ -125,6 +125,11 @@ The file [run-scripts/training-benchmarks/compare-dataset-training.py](./run-scr
 
 - Post process the benchmarks with `make post-vit` once the jobs above are done. It will print you a table showing the average time, std, and number of runs for each file format.
 
+## Tabular Data Formats
+
+This chapter also covers tabular data, see [`tabular-data-formats/`](tabular-data-formats/README.md) for a comparison of
+Parquet, CSV, and HDF5 on NYC taxi trip data.
+
 ### Table of contents
 
 - [Home](..#readme)
