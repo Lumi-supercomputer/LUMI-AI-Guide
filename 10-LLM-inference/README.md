@@ -168,8 +168,11 @@ srun singularity run \
 
 **Flags explained:**
 - `vllm bench throughput` runs vLLM in benchmarking mode.
-- `--dataset-name sharegpt` is the dataset of prompts from real-world human/LLM conversations that is run through the model.
+- `--dataset-name sharegpt` selects the ShareGPT dataset of prompts from real-world human/LLM conversations (but see the note below).
 - `--num-prompts 1000` truncates the long dataset to 1000 entries. 
+
+> [!NOTE]  
+> Because the script does not set `--dataset-path`, vLLM does not use ShareGPT but falls back to random prompts (1024 input and 128 output tokens each). The job log shows `When dataset path is not set, it will default to random dataset`. The throughput numbers are therefore for random prompts. This may be revisited later, see [issue #120](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/issues/120).
 
 ---
 
