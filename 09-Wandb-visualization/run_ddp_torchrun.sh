@@ -25,7 +25,7 @@ export TORCH_HOME="/scratch/${SLURM_JOB_ACCOUNT}/${USER}/torch_home"
 mkdir -p "$TORCH_HOME"
 
 # choose container
-SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
+SIF=/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20260929_104918/lumi-multitorch-full-u24r72f21m50t211-20260929_104918.sif
 
 # need to create sqsh file with mlflow included
 srun singularity run $SIF bash -c 'python -m torch.distributed.run --numa-binding=exclusive --standalone --nnodes=1 --nproc_per_node=8 wandb_ddp_visiontransformer.py'

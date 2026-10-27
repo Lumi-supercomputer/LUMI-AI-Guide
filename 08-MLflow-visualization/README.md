@@ -3,6 +3,9 @@
 > [!NOTE]  
 > If you wish to run the included examples on LUMI, have a look at the [quickstart](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/tree/main/01-quickstart#readme) chapter for instructions on how to set up the required environment.
 
+> [!WARNING]  
+> This chapter still uses the April 2026 container (`lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif`, MLflow 3.11.1), not the newer container used in the other chapters. The MLflow app in the LUMI web interface currently cannot open logs written by the MLflow version in newer containers. See [issue #119](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/issues/119).
+
 __[MLflow](https://www.mlflow.org/)__ is an open source tool for tracking experiments and models in machine learning projects. MLflow 3.11.1 is already available in the lumi-multitorch-full container as of the April 2026 release (ROCm 7.0) and later. Adapting your code to use MLflow requires minimal modification, and the results can be easily displayed using the web interface.
 
 ## Collecting logs

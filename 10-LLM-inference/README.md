@@ -3,7 +3,7 @@ This chapter describes how to perform Large Language Model (LLM) inference on LU
 
 In this chapter, we will demonstrate how to run a vLLM server with [`Qwen3.6-35B-A3B`](https://huggingface.co/Qwen/Qwen3.6-35B-A3B), and how to use Python scripts for both interactive and batch inference.
 
-This chapter uses a pinned and date-stamped container `lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif` which includes vLLM that is optimised for running on LUMI. 
+This chapter uses a pinned and date-stamped container `lumi-multitorch-full-u24r72f21m50t211-20260929_104918.sif` which includes vLLM that is optimised for running on LUMI. 
 
 > **💡 Note for production:** For your own workloads, you can check `/appl/local/laifs/containers/` for a newer container. We recommend pinning to the latest specific date-stamped container rather than using the `latest` symlink to prevent unexpected updates from breaking your scripts.
 
@@ -98,7 +98,7 @@ Interacting with a running vLLM server requires you to be on the same compute no
 3. **Set up the environment:**
     Save the long path to the container in the `SIF` variable and load the bindings to let the container 'see' the filesystem:
     ```bash
-    export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
+    export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20260929_104918/lumi-multitorch-full-u24r72f21m50t211-20260929_104918.sif
 
     module purge
     module load Local-LAIF lumi-aif-singularity-bindings
@@ -168,8 +168,11 @@ srun singularity run \
 
 **Flags explained:**
 - `vllm bench throughput` runs vLLM in benchmarking mode.
-- `--dataset-name sharegpt` is the dataset of prompts from real-world human/LLM conversations that is run through the model.
+- `--dataset-name sharegpt` selects the ShareGPT dataset of prompts from real-world human/LLM conversations (but see the note below).
 - `--num-prompts 1000` truncates the long dataset to 1000 entries. 
+
+> [!NOTE]  
+> Because the script does not set `--dataset-path`, vLLM does not use ShareGPT but falls back to random prompts (1024 input and 128 output tokens each). The job log shows `When dataset path is not set, it will default to random dataset`. The throughput numbers are therefore for random prompts. This may be revisited later, see [issue #120](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/issues/120).
 
 ---
 

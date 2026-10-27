@@ -34,7 +34,8 @@ def train_model(model, criterion, optimizer, train_loader, val_loader, epochs, r
     model.to(device)
 
     if rank == 0:
-        writer = SummaryWriter("runs")
+        # one subdirectory per job, so each job shows up as its own run in TensorBoard
+        writer = SummaryWriter(f"runs/{os.environ['SLURM_JOB_ID']}")
 
     if rank == 0:
         dataiter = iter(train_loader)
