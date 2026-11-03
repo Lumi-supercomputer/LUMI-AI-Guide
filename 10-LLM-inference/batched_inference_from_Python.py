@@ -21,7 +21,7 @@ def main():
     with open("prompts.txt", "r", encoding="utf-8") as f:
         prompts = [line.strip() for line in f if line.strip()]
 
-        prompts = prompts[:300] # truncate the number of prompts to 300
+        prompts = prompts[:200] # truncate the number of prompts to 200
 
     # 4.Format into the "Chat" structure (List of Lists of Dicts)
     # Every conversation in the batch gets the same system prompt
@@ -37,12 +37,18 @@ def main():
     llm = LLM(
         model=args.MODEL,
         tensor_parallel_size=torch.cuda.device_count(),
-        load_format="runai_streamer"
+        load_format="runai_streamer",
+        attention_backend="TRITON_ATTN" # Needed for hybrid models such as Qwen3.8: the default ROCm attention falls back to a slow implementation
         )
-    sampling_params = SamplingParams(max_tokens=5000)
+    sampling_params = SamplingParams(max_tokens=8192)
 
     # 6. Run batched inference
-    outputs = llm.chat(conversations, sampling_params=sampling_params, use_tqdm=True)
+    outputs = llm.chat(
+        conversations,
+        sampling_params=sampling_params,
+        chat_template_kwargs={"reasoning_effort": "medium"},
+        use_tqdm=True
+    )
 
     # 7. Prepare the data for JSON
     # We use zip to ensure each prompt matches its specific response
@@ -55,7 +61,7 @@ def main():
         results.append(entry)
 
     # 8. Save the results
-    with open("results.json", "w", encoding="utf-8") as f:
+    with open("results_from_Python.json", "w", encoding="utf-8") as f:
         json.dump(results, f, indent=4, ensure_ascii=False)
 
     print(f"Done! Processed {len(results)} prompts.")
