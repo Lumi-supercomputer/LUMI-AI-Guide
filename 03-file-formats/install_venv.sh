@@ -2,7 +2,7 @@
 module purge
 export BUILD_DIR=env-temp
 export SQUASHFS_NAME=venv.sqsh
-export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20260929_104918/lumi-multitorch-full-u24r72f21m50t211-20260929_104918.sif
+export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-full-u24r72f21m50t211-20261028_090706.sif
 
 # creating the venv
 echo "Creating venv in: $BUILD_DIR"

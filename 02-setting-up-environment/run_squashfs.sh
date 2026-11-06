@@ -11,7 +11,7 @@
 module purge
 module load Local-LAIF lumi-aif-singularity-bindings
 
-SIF=/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20260929_104918/lumi-multitorch-full-u24r72f21m50t211-20260929_104918.sif
+SIF=/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-full-u24r72f21m50t211-20261028_090706.sif
 
 export SINGULARITYENV_PREPEND_PATH=/user-software/bin # gives access to packages inside the container
 singularity run -B optuna-env.sqsh:/user-software:image-src=/ $SIF python test_packages.py
