@@ -17,7 +17,8 @@ async def get_response(model_name, client, user_prompt, sem):
                     {"role": "system", "content": "You are a helpful and concise AI assistant."},
                     {"role": "user", "content": user_prompt}
                 ],
-                max_completion_tokens=5000
+                max_completion_tokens=8192,
+                extra_body={"chat_template_kwargs": {"reasoning_effort": "medium"}}
             )
             return {
                 "prompt": user_prompt,
@@ -44,7 +45,7 @@ async def main():
     with open("prompts.txt", "r", encoding="utf-8") as f:
         prompts = [line.strip() for line in f if line.strip()]
 
-        prompts = prompts[:300] # truncate the number of prompts to 300
+        prompts = prompts[:200] # truncate the number of prompts to 200
 
     # 4. Automatically find the socket file
     socket_path = f"/tmp/vllm-{os.environ.get('SLURM_JOB_ID')}.sock"
@@ -56,7 +57,7 @@ async def main():
     transport = httpx.AsyncHTTPTransport(uds=socket_path)
 
     # 5. Connect to the socket and create a 'task' for every prompt
-    sem=asyncio.Semaphore(256) # Set how many requests to send to the vLLM server at a time
+    sem=asyncio.Semaphore(128) # Set how many requests to send to the vLLM server at a time
     async with httpx.AsyncClient(transport=transport) as http_client:
         client = AsyncOpenAI(
             base_url="http://localhost/v1", 
@@ -72,10 +73,10 @@ async def main():
         results = await tqdm.gather(*tasks, desc="Inference Progress")
 
     # 6. Save
-    with open("results.json", "w", encoding="utf-8") as f:
+    with open("results_from_server.json", "w", encoding="utf-8") as f:
         json.dump(results, f, indent=4, ensure_ascii=False)
 
-    print(f"Done! Processed {len(results)} prompts and saved to 'results.json'.")
+    print(f"Done! Processed {len(results)} prompts and saved to 'results_from_server.json'.")
 
 
 if __name__ == "__main__":

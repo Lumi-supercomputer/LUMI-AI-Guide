@@ -18,7 +18,7 @@ export MIOPEN_USER_DB_PATH="/tmp/miopen-config-${USER}"
 srun mkdir -p "$MIOPEN_CUSTOM_CACHE_DIR" "$MIOPEN_USER_DB_PATH"
 
 # We use the PyTorch container provided by the LUMI AI Factory Services, which contains vLLM.
-export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20260929_104918/lumi-multitorch-full-u24r72f21m50t211-20260929_104918.sif
+export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-full-u24r72f21m50t211-20261028_090706.sif
 
 # Where to store the huge models. Point this to your project's scratch directory.
 export HF_HOME=/scratch/$SLURM_JOB_ACCOUNT/hf-cache/
@@ -27,15 +27,18 @@ export HF_HOME=/scratch/$SLURM_JOB_ACCOUNT/hf-cache/
 export VLLM_CACHE_ROOT=/scratch/$SLURM_JOB_ACCOUNT/vllm-cache
 
 # Model selection
-MODEL_NAME="Qwen/Qwen3.6-35B-A3B"
+MODEL_NAME="Qwen/Qwen3.8-27B"
 
 # Socket file path
 SOCKET_FILE=$TMPDIR/vllm-$SLURM_JOB_ID.sock
 
 # Start vLLM 
+# TRITON_ATTN is needed for hybrid models such as Qwen3.8: the default ROCm attention
+# can't use its fast kernel with them and falls back to a slow implementation.
 srun singularity run \
     $SIF \
     vllm serve $MODEL_NAME \
     --tensor-parallel-size $SLURM_GPUS_ON_NODE \
     --uds $SOCKET_FILE \
-    --load-format runai_streamer
+    --load-format runai_streamer \
+    --attention-backend TRITON_ATTN

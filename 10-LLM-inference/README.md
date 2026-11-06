@@ -1,9 +1,9 @@
 # LLM inference
 This chapter describes how to perform Large Language Model (LLM) inference on LUMI using vLLM. [vLLM](https://docs.vllm.ai/en/latest/) is a popular and memory-efficient inference engine for hosting LLMs.  
 
-In this chapter, we will demonstrate how to run a vLLM server with [`Qwen3.6-35B-A3B`](https://huggingface.co/Qwen/Qwen3.6-35B-A3B), and how to use Python scripts for both interactive and batch inference.
+In this chapter, we will demonstrate how to run a vLLM server with [`Qwen3.8-27B`](https://huggingface.co/Qwen/Qwen3.8-27B), and how to use Python scripts for both interactive and batch inference.
 
-This chapter uses a pinned and date-stamped container `lumi-multitorch-full-u24r72f21m50t211-20260929_104918.sif` which includes vLLM that is optimised for running on LUMI. 
+This chapter uses a pinned and date-stamped container `lumi-multitorch-full-u24r72f21m50t211-20261028_090706.sif` which includes vLLM that is optimised for running on LUMI. 
 
 > **💡 Note for production:** For your own workloads, you can check `/appl/local/laifs/containers/` for a newer container. We recommend pinning to the latest specific date-stamped container rather than using the `latest` symlink to prevent unexpected updates from breaking your scripts.
 
@@ -19,6 +19,8 @@ There are two ways to interact with a model:
 | **Server-client mode**    | Deploys vLLM as an OpenAI-compatible API server using a Unix socket. | Load once, run many: Weights are loaded into VRAM when the server starts and stay there until the Slurm job ends.                | Interactive testing, checking the model's 'vibe', troubleshooting, or building a chat interface. |
 | **Offline (Python) mode** | Uses the LLM class directly within a Python script to process data.  | Load, process, exit: Weights are loaded into VRAM, all prompts are processed in a single high-speed burst, then VRAM is cleared. | High-throughput batch jobs, benchmarking, and processing static files.      |
 
+> **💡 Note:** vLLM sometimes fails to start with `'ShmRingBuffer' object has no attribute 'shared_memory'`. This is a [known issue](https://github.com/vllm-project/vllm/issues/24580); just resubmit the job.
+
 ## The example scripts
 In this chapter, we use three distinct Python scripts to demonstrate different ways of interacting with the model:
 - [`chat_with_LLM.py`](chat_with_LLM.py): Enables an interactive, back-and-forth dialogue with the model, including chat history.
@@ -28,9 +30,9 @@ In this chapter, we use three distinct Python scripts to demonstrate different w
 ## Hardware requirements
 To run an LLM, the model must fit entirely in VRAM. The memory required for model weights depends on the number of parameters and the precision at which they are stored.
 
-As a rule of thumb, at half precision (BF16/FP16), you need 2GB of VRAM per 1B parameters, plus 20% overhead for the KV cache and ROCm overhead. For [`Qwen3.6-35B-A3B`](https://huggingface.co/Qwen/Qwen3.6-35B-A3B):
-- **Weights:** 35B parameters × 2 bytes = **70GB**. Note that for [Mixture-of-Experts (MoE)](https://huggingface.co/blog/moe-transformers) models, all the weights are loaded into VRAM, even though only a fraction (3B in our case) is active at a time.
-- **KV cache & overhead:** Adding the 20% buffer brings the total to **≈84GB**. Keep in mind that longer context size requires significantly more VRAM for the KV cache.
+As a rule of thumb, at half precision (BF16/FP16), you need 2GB of VRAM per 1B parameters, plus 20% overhead for the KV cache and ROCm overhead. For [`Qwen3.8-27B`](https://huggingface.co/Qwen/Qwen3.8-27B):
+- **Weights:** 27B parameters × 2 bytes = **54GB**.
+- **KV cache & overhead:** Adding the 20% buffer brings the total to **≈65GB**. Keep in mind that longer context size requires significantly more VRAM for the KV cache.
 
 Since a single LUMI GCD has 64GB, one is not enough, so we use 2 GCDs (128GB total). For a detailed breakdown of different models and [quantisation](https://bentoml.com/llm/model-preparation/llm-quantization) levels, you can use [this VRAM calculator](https://apxml.com/tools/vram-calculator).
 
@@ -68,13 +70,15 @@ srun singularity run \
     vllm serve $MODEL_NAME \
     --tensor-parallel-size $SLURM_GPUS_ON_NODE \
     --uds $SOCKET_FILE \
-    --load-format runai_streamer
+    --load-format runai_streamer \
+    --attention-backend TRITON_ATTN
 ``` 
 **Flags explained:**
 - `vllm serve $MODEL_NAME` is the heart of the command that starts our vLLM server.
 - `--tensor-parallel-size` tells vLLM how many GCDs to split the model across. We set this to `$SLURM_GPUS_ON_NODE` so it automatically matches our `#SBATCH` request.
 - `--uds $SOCKET_FILE` creates the Unix domain socket we discussed earlier and connects the vLLM server to it.
 - `--load-format runai_streamer` is a specialised loader that speeds up the transfer of model weights from the parallel file system to the GPUs, significantly reducing loading times for supported models.
+- `--attention-backend TRITON_ATTN` is needed for hybrid models such as Qwen3.8, which mix standard attention with linear-attention layers. With them, vLLM's default ROCm attention can't use its fast kernel and falls back to a slow implementation.
 
 </details>
 
@@ -98,7 +102,7 @@ Interacting with a running vLLM server requires you to be on the same compute no
 3. **Set up the environment:**
     Save the long path to the container in the `SIF` variable and load the bindings to let the container 'see' the filesystem:
     ```bash
-    export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20260929_104918/lumi-multitorch-full-u24r72f21m50t211-20260929_104918.sif
+    export SIF=/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-full-u24r72f21m50t211-20261028_090706.sif
 
     module purge
     module load Local-LAIF lumi-aif-singularity-bindings
@@ -110,16 +114,16 @@ Interacting with a running vLLM server requires you to be on the same compute no
     - **💬 Option 1: Interactive chat.** Best for having a back-and-forth conversation and quickly checking the model's "vibe" and output format.
         
         ```bash
-        singularity run $SIF python chat_with_LLM.py "Qwen/Qwen3.6-35B-A3B"
+        singularity run $SIF python chat_with_LLM.py "Qwen/Qwen3.8-27B"
         ```
-        > **ℹ️ NOTE: Why the `httpx` transport in [`chat_with_LLM.py`](chat_with_LLM.py)?**
+        > **💡 NOTE: Why the `httpx` transport in [`chat_with_LLM.py`](chat_with_LLM.py)?**
         > Standard LLM clients expect an `http://localhost:8000` address. Because we use a Unix socket for security and speed on LUMI, we use the `httpx.HTTPTransport(uds=socket_path)` to redirect the library's traffic into that `.sock` file.
 
     - **🚀 Option 2: Batched API inference.** Best for sending a lot of prompts, receiving the LLM's responses, and tweaking the prompts to run them again without reloading the model.
         ```bash
-        singularity run $SIF python batched_inference_from_server.py "Qwen/Qwen3.6-35B-A3B"
+        singularity run $SIF python batched_inference_from_server.py "Qwen/Qwen3.8-27B"
         ```    
-        *The results will be saved to `results.json`.*
+        *The results will be saved to `results_from_server.json`.*
 
 ---
 
@@ -138,12 +142,12 @@ Since this is a batch job, you won't see the output in your terminal. You can ch
 ```bash
 tail -f slurm-<job-id>.out
 ```
-Once the job finishes, the model's responses will be saved to `results.json`.
+Once the job finishes, the model's responses will be saved to `results_from_Python.json`. Each response starts with the model's reasoning, which ends with `</think>`.
 
 ---
 
 ## Run an offline throughput test
-To understand how many tokens per second your setup can handle, you can run an offline benchmark. This sends a burst of requests to vLLM and measures the raw hardware input and output throughput without the overhead of an API server or data serialisation/deserialisation. This throughput test is a standalone job independent of the workflows above. Update your project ID and submit:
+To understand how many tokens per second your setup can handle, you can run an offline benchmark. This sends a burst of requests to vLLM and measures the raw hardware input and output throughput without the overhead of an API server or data serialisation/deserialisation. Unlike Workflow B, which processes your own prompts and saves the responses, this test uses the standard ShareGPT dataset and discards the responses, so the results can be compared with other vLLM benchmarks. It is a standalone job independent of the workflows above. Update your project ID and submit:
 ```bash
 sbatch test-throughput.sh
 ```
@@ -153,26 +157,28 @@ Once you submit the job, you can view the progress and the final throughput metr
 tail -f slurm-<job-id>.out
 ```
 
-This script is mostly identical to `start-vllm-server.sh`. The main difference lies in the following command:
+This script is mostly identical to `start-vllm-server.sh`. The main difference is that it downloads the ShareGPT dataset (about 650MB) to the node-local `/tmp` and runs the benchmark:
 
 ```bash
+DATASET=/tmp/sharegpt-${SLURM_JOB_ID}.json
+curl -sSfL -o "$DATASET" https://huggingface.co/datasets/anon8231489123/ShareGPT_Vicuna_unfiltered/resolve/main/ShareGPT_V3_unfiltered_cleaned_split.json
+
 srun singularity run \
     $SIF \
     vllm bench throughput \
     --model $MODEL_NAME \
     --tensor-parallel-size $SLURM_GPUS_ON_NODE \
     --dataset-name sharegpt \
+    --dataset-path $DATASET \
     --num-prompts 1000 \
-    --load-format runai_streamer
+    --load-format runai_streamer \
+    --attention-backend TRITON_ATTN
 ```
 
 **Flags explained:**
 - `vllm bench throughput` runs vLLM in benchmarking mode.
-- `--dataset-name sharegpt` selects the ShareGPT dataset of prompts from real-world human/LLM conversations (but see the note below).
-- `--num-prompts 1000` truncates the long dataset to 1000 entries. 
-
-> [!NOTE]  
-> Because the script does not set `--dataset-path`, vLLM does not use ShareGPT but falls back to random prompts (1024 input and 128 output tokens each). The job log shows `When dataset path is not set, it will default to random dataset`. The throughput numbers are therefore for random prompts. This may be revisited later, see [issue #120](https://github.com/Lumi-supercomputer/LUMI-AI-Guide/issues/120).
+- `--dataset-name sharegpt` and `--dataset-path $DATASET` select the downloaded ShareGPT dataset of prompts from real-world human/LLM conversations.
+- `--num-prompts 1000` truncates the long dataset to 1000 entries.
 
 ---
 
