@@ -11,7 +11,7 @@ import pandas as pd
 from torch.utils.data import Dataset, DataLoader
 
 
-ROW_GROUP_SIZES = {"small": 1000, "default": None, "large": 500000}
+ROW_GROUP_SIZES = {"small": 1000, "default": None, "large": 2000000}
 
 
 def convert(args):
