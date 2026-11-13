@@ -1,6 +1,6 @@
 """
 Compiles bench-scan and bench-dataloader, runs into a single results
-table with mean and standard deviation.
+table with the median and the [min-max] range.
 
 Usage: python3 post_process_tabular.py
 """
@@ -19,9 +19,8 @@ DATALOADER_RE = re.compile(r"(\w+) dataloader time: ([\d.]+)")
 def summarize(label, values):
     if len(values) < 2:
         return f"{values[0]:.3f}" if values else "N/A"
-    mean = stats.mean(values)
-    std = stats.stdev(values)
-    return f"{mean:.3f} +/- {std:.3f} (n={len(values)})"
+    median = stats.median(values)
+    return f"{median:.3f} [{min(values):.3f}-{max(values):.3f}] (n={len(values)})"
 
 
 def process_scan():
@@ -40,13 +39,13 @@ def process_scan():
             data[fmt]["filt"].append(float(filt))
 
     print("\n=== Scanning and filtering (seconds) ===")
-    print(f"{'format':<10} {'full scan':>20} {'col subset':>20} {'filtered':>20}")
+    print(f"{'format':<10} {'full scan':>28} {'col subset':>28} {'filtered':>28}")
     for fmt in ["parquet", "csv", "hdf5"]:
         if fmt not in data:
             continue
         row = data[fmt]
-        print(f"{fmt:<10} {summarize('full', row['full']):>20} "
-              f"{summarize('col', row['col']):>20} {summarize('filt', row['filt']):>20}")
+        print(f"{fmt:<10} {summarize('full', row['full']):>28} "
+              f"{summarize('col', row['col']):>28} {summarize('filt', row['filt']):>28}")
 
 
 def process_dataloader():
@@ -63,13 +62,13 @@ def process_dataloader():
         data[fmt]["dataloader"].append(float(val))
 
     print("\n=== Random row-batch access (seconds) ===")
-    print(f"{'format':<10} {'load time':>25} {'dataloader time':>25}")
+    print(f"{'format':<10} {'load time':>28} {'dataloader time':>28}")
     for fmt in ["parquet", "csv", "hdf5"]:
         if fmt not in data:
             continue
         row = data[fmt]
-        print(f"{fmt:<10} {summarize('load', row['load']):>25} "
-              f"{summarize('dataloader', row['dataloader']):>25}")
+        print(f"{fmt:<10} {summarize('load', row['load']):>28} "
+              f"{summarize('dataloader', row['dataloader']):>28}")
 
 
 def main():
