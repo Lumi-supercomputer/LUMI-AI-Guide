@@ -11,10 +11,12 @@ These steps reproduce the results in the [tabular data formats README](README.md
 5. Run `make bench-scan` to test full-scan, column-subset and filtered reads.
 6. Run `make bench-dataloader` to test random row-batch access.
 7. Run `make post` to compile the results. It prints two tables, one for scanning and
-   filtering and one for random row-batch access, each showing the average time, standard
-   deviation and number of runs for each format.
+   filtering and one for random row-batch access, each showing the median, the [min-max] range and
+   the number of runs for each format.
 
-Run steps 5 and 6 several times (the README results use 3 runs each).
+Run steps 5 and 6 several times (the README results use 5 runs each). Times can vary a lot
+between runs, in particular depending on whether the files are already cached on the node,
+so compare medians and look at the range.
 
 ## Row group experiment
 
@@ -26,5 +28,6 @@ make bench-rowgroups
 ```
 
 `convert-rowgroups` writes three Parquet versions of the same table (small, default and large
-row groups). `bench-rowgroups` runs the random row-batch test on each of them and prints the
-load time and dataloader time.
+row groups; large has more rows per group than the default). `bench-rowgroups` runs the random
+row-batch test on each of them and prints the load time and dataloader time. Run it several
+times (the README results use 3 runs).
