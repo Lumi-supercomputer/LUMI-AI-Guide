@@ -53,8 +53,7 @@ def bench_filtered(fmt, path, column, threshold):
         df = pd.read_csv(path)
         df = df[df[column] > threshold]
     elif fmt == "hdf5":
-        df = pd.read_hdf(path, key="taxi")
-        df = df[df[column] > threshold]
+        df = pd.read_hdf(path, key="taxi", where=f"{column} > {threshold}")
     return time.time() - t0, len(df)
 
 

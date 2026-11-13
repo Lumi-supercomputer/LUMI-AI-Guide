@@ -35,7 +35,7 @@ def main():
     print(f"Wrote {csv_path}")
 
     hdf5_path = os.path.join(args.outdir, "taxi.h5")
-    df.to_hdf(hdf5_path, key="taxi", mode="w", format="table", data_columns=True)
+    df.to_hdf(hdf5_path, key="taxi", mode="w", format="table", data_columns=True, index=False)
     print(f"Wrote {hdf5_path}")
 
     print("\nFile sizes:")

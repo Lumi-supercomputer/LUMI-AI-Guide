@@ -86,8 +86,7 @@ class HDF5RowDataset(Dataset):
         return row.iloc[0].to_dict()
 
     def __getitems__(self, indices):
-        idx_list = ",".join(str(i) for i in indices)
-        rows = self.store.select(self.key, where=f"index in [{idx_list}]")
+        rows = self.store.select(self.key, where=sorted(indices))
         return [row.to_dict() for _, row in rows.iterrows()]
 
 
