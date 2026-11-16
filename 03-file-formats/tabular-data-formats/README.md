@@ -7,7 +7,7 @@ This chapter compares three formats, Parquet, CSV and HDF5, on two different way
 ## TLDR
 
 - Scanning, filtering and file size: Parquet was the fastest and the smallest of the three formats.
-- Random row batches: CSV and Parquet were both fast once loaded (about 1 s for 10,000 rows), because the benchmark loads the whole table into memory first. HDF5 reads rows from the file on demand; its time varied from 1.9 s to 128 s between runs (median 103 s).
+- Random row batches: CSV and Parquet were both fast once loaded (about 1 s for 10,000 rows), because the benchmark loads the whole table into memory first. HDF5 reads rows from the file on demand and was the slowest; its time varied from 2.7 s to 23.2 s between runs (median 14.4 s).
 - Parquet is not always the best choice: see [Decision framework](#decision-framework), and note that results depend on your table's size and on how you read it.
 
 ## What is being tested
@@ -29,7 +29,7 @@ NYC Yellow Taxi trip records (one month, ~2.96 million rows, 19 columns), downlo
 
 ## Results
 
-Each benchmark was run 5 times. Values are the median in seconds, with the range (min–max) in brackets.
+Each benchmark was run 5 times, each run as a separate Slurm job. Values are the median in seconds, with the range (min–max) in brackets. The results were measured in November 2026 with the container `lumi-multitorch-full-u24r72f21m50t211-20261028_090706.sif`.
 
 ### File size
 
@@ -43,25 +43,25 @@ Each benchmark was run 5 times. Values are the median in seconds, with the range
 
 | Format  | Full scan            | Column subset (2 of 19) | Filtered             |
 |---------|----------------------|-------------------------|----------------------|
-| Parquet | 0.506 (0.322–0.539)  | 0.023 (0.020–0.037)     | 0.153 (0.120–0.214)  |
-| CSV     | 4.993 (3.998–6.337)  | 1.686 (1.612–2.265)     | 4.681 (3.950–5.807)  |
-| HDF5    | 8.722 (1.221–13.424) | 1.564 (1.170–1.903)     | 0.348 (0.226–0.435)  |
+| Parquet | 0.326 (0.220–0.358)  | 0.015 (0.013–0.017)     | 0.117 (0.111–0.130)  |
+| CSV     | 2.055 (1.220–3.438)  | 0.616 (0.521–0.656)     | 1.404 (1.234–2.637)  |
+| HDF5    | 4.978 (1.460–5.442)  | 1.515 (1.402–1.681)     | 0.238 (0.221–0.361)  |
 
 ### Random row batch access (10,000 rows)
 
 | Format  | Load time            | Dataloader time         |
 |---------|----------------------|-------------------------|
-| Parquet | 1.953 (0.148–2.099)  | 1.004 (0.977–1.988)     |
-| CSV     | 5.497 (4.024–9.868)  | 0.811 (0.699–1.479)     |
-| HDF5    | 6.003 (0.062–7.676)  | 103.040 (1.902–128.315) |
+| Parquet | 1.416 (0.180–1.945)  | 0.875 (0.851–0.979)     |
+| CSV     | 1.982 (1.635–2.520)  | 0.994 (0.984–1.104)     |
+| HDF5    | 3.079 (0.619–4.101)  | 14.431 (2.692–23.165)   |
 
-HDF5's dataloader time varied widely between runs. The two fastest runs also opened the file almost instantly (load time 0.06 s and 0.11 s, against 6.0 to 7.7 s in the others), which suggests the file was already in the node's cache. Read the HDF5 median with this in mind.
+HDF5's dataloader time varied widely between runs. Each run was a new job, usually on a different node, so the file was likely not yet in the node's cache. When we ran all 5 repetitions inside a single job on one node, the HDF5 dataloader time was stable at about 2.6 s, close to the fastest run above. Read the HDF5 median with this in mind.
 
 ## What load time and dataloader time measure
 
 The three formats split their cost between "load" and "dataloader" differently:
 
-- **CSV** reads the entire file into memory during load time, so the dataloader step only looks up rows that are already in memory. All of the cost is paid upfront, which is why CSV has the slowest load time and the fastest dataloader time.
+- **CSV** reads the entire file into memory during load time, so the dataloader step only looks up rows that are already in memory. All of the cost is paid upfront, which is why CSV has a slow load time and a fast dataloader time.
 - **HDF5** only opens the file during the load, with each random batch triggering a new file query. As a result, the data access cost is paid repeatedly and this is evident with a higher dataloader time.
 - **Parquet** memory-maps the file during load, then decodes it into an in-memory table. Each random batch then slices rows out of that table, so, like CSV, the dataloader step does no file reads.
 
@@ -69,7 +69,7 @@ The three formats split their cost between "load" and "dataloader" differently:
 
 Choose a format based on how you plan to read your data:
 
-- If you mostly scan full tables, read specific columns, or filter rows (data exploration, feature engineering): use Parquet. It was roughly 10x faster than CSV for a full scan, and roughly 70x faster than both CSV and HDF5 when reading two columns.
+- If you mostly scan full tables, read specific columns, or filter rows (data exploration, feature engineering): use Parquet. It was roughly 6x faster than CSV for a full scan, and roughly 40x faster than CSV and 100x faster than HDF5 when reading two columns.
 - If you mostly grab small, randomly-ordered batches of rows (feeding a model during training) and the table fits in memory: use Parquet or CSV. CSV in this experiment was only fast because the whole table sits in memory.
 - If the table does not fit in memory: HDF5 reads rows from the file on demand instead of loading everything first. Expect slower and less predictable times than the in-memory formats.
 - If your table is much larger or differently shaped than the ~2.96 million rows and 19 columns tested here, treat these numbers as directional, and run the benchmarks on your own data (see [BENCHMARKS.md](BENCHMARKS.md)).
@@ -87,9 +87,9 @@ We generated Parquet files with three different row-group configurations and com
 
 | Setting | Row group size (max rows)           | Row groups created | File size | Load time            | Dataloader time      |
 |---------|-------------------------------------|--------------------|-----------|----------------------|----------------------|
-| small   | 1000                                | 2,965              | 89.9 MB   | 4.069 (0.948–6.464)  | 2.990 (2.885–3.146)  |
-| default | 1,048,576 (pyarrow default)         | 3                  | 58.0 MB   | 2.664 (0.164–5.423)  | 1.024 (0.943–1.069)  |
-| large   | 2,000,000                           | 2                  | 58.0 MB   | 2.216 (0.173–3.352)  | 1.046 (0.933–1.053)  |
+| small   | 1000                                | 2,965              | 89.9 MB   | 4.899 (3.165–11.338) | 2.899 (2.644–3.060)  |
+| default | 1,048,576 (pyarrow default)         | 3                  | 58.0 MB   | 1.353 (1.315–1.901)  | 0.941 (0.813–1.731)  |
+| large   | 2,000,000                           | 2                  | 58.0 MB   | 1.970 (1.869–2.015)  | 0.914 (0.816–1.408)  |
 
 The last row group in each file holds the remaining rows. Small row groups made the file about 55% larger and the dataloader about 3x slower, while default and large behaved almost identically. Keep in mind that, this benchmark loads each file into memory before timing. The dataloader times therefore reflect picking rows out of an in-memory table, and reading row groups directly from disk may behave differently.
 

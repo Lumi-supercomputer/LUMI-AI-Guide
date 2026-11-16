@@ -48,7 +48,7 @@ class CSVRowDataset(Dataset):
 
     def __enter__(self):
         t0 = time.time()
-        self.df = pd.read_csv(self.path)
+        self.df = pd.read_csv(self.path, low_memory=False)
         self.load_time = time.time() - t0
         return self
 

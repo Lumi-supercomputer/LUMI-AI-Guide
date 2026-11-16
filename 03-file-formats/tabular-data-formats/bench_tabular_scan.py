@@ -27,7 +27,7 @@ def bench_full_scan(fmt, path):
     if fmt == "parquet":
         df = pd.read_parquet(path)
     elif fmt == "csv":
-        df = pd.read_csv(path)
+        df = pd.read_csv(path, low_memory=False)
     elif fmt == "hdf5":
         df = pd.read_hdf(path, key="taxi")
     return time.time() - t0, len(df)
@@ -50,7 +50,7 @@ def bench_filtered(fmt, path, column, threshold):
         df = pd.read_parquet(path, filters=[(column, ">", threshold)])
     elif fmt == "csv":
         # No pushdown available in CSV: must read everything, then filter in memory.
-        df = pd.read_csv(path)
+        df = pd.read_csv(path, low_memory=False)
         df = df[df[column] > threshold]
     elif fmt == "hdf5":
         df = pd.read_hdf(path, key="taxi", where=f"{column} > {threshold}")
