@@ -1,6 +1,6 @@
 ACCOUNT ?= project_xxxxxxxxx
-SIF := /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-full-u24r70f21m50t210-20260415_130625.sif
-MODULES := module purge && module use /appl/local/laifs/modules && module load lumi-aif-singularity-bindings
+SIF := /appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-full-u24r72f21m50t211-20261028_090706.sif
+MODULES := module purge && module load Local-LAIF lumi-aif-singularity-bindings
 
 
 download:
